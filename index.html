@@ -27,6 +27,7 @@
     </span>
   </div>
 </div>
+</div>
 
     <nav>
       <a href="#about">About Us</a>
@@ -168,11 +169,12 @@
     </div>
   </div>
 
+  <a href="#partners">Partners</a>
+  <a href="#clients">Clients</a>
 
 
       <a href="#contact">Contact</a>
     </nav>
-  </div>
 </header>
 
 <section class="hero">
@@ -294,21 +296,118 @@
 
 
 
-<section class="section">
-  <h2>Partners & Clients</h2>
-  <p>We work with reputable suppliers such as ACI Healthcare Limited and serve hospitals, clinics, and healthcare institutions nationwide.</p>
+<section id="partners" class="section partners-section">
+  <h2>Our Partners</h2>
+  <p>We source our products from reputable manufacturers including:</p>
+  <div class="carousel-container">
+    <div class="partners-carousel">
+      <img src="images/incepta.png" alt="Partner 1 Logo">
+      <img src="images/opsonin.png" alt="Partner 2 Logo">
+      <img src="images/ACI.jpeg" alt="Partner 3 Logo">
+      <img src="images/medicef.png" alt="Partner 4 Logo">
+      <img src="images/trinity-biotech.png" alt="Partner 3 Logo">
+      <img src="images/ACI HEALTHCARE.png" alt="Partner 4 Logo">
+    </div>
+  </div>
 </section>
 
-<section id="contact" class="section contact-cta">
-  <h2>Contact Us</h2>
-  <p><strong>Email:</strong> radipharm254@gmail.com / info@radiancepharma.co.ke</p>
-  <p><strong>Phone:</strong> 0711 638 779 / 0722 842 823</p>
-  <a href="pdf/2024-pricelist.pdf" class="btn" target="_blank">Download Product Pricelist</a>
+<section id="clients" class="section clients-section">
+  <h2>Our Clients</h2>
+  <p>We proudly serve hospitals, clinics, and healthcare institutions nationwide:</p>
+  <div class="carousel-container">
+    <div class="clients-carousel">
+      <img src="images/UON.png" alt="Client 1 Logo">
+      <img src="images/KUTRH.png" alt="Client 2 Logo">
+      <img src="images/KNH.png" alt="Client 3 Logo">
+      <img src="images/UNDP.png" alt="Client 4 Logo">
+      <img src="images/UOE.png" alt="Client 2 Logo">
+      <img src="images/KDF.png" alt="Client 3 Logo">
+      <img src="images/AGAKHAN.png" alt="Client 4 Logo">
+      <img src="images/MEDS.png" alt="Client 2 Logo">
+      <img src="images/MTRH.png" alt="Client 3 Logo">
+      <img src="images/KEMSA.png" alt="Client 4 Logo">
+      <!-- Add more logos here -->
+    </div>
+  </div>
 </section>
+<section class="contact" id="contact">
+  <div class="contact-intro">
+    <h2>Want to Reach Out to Us?</h2>
+    <p>We’d love to hear from you. Please fill out the form or contact us directly using the details below.</p>
+  </div>
+
+  <div class="contact-container">
+    <!-- Contact Form -->
+    <form class="contact-form">
+      <div class="form-group">
+        <input type="text" placeholder="Your Name" required />
+      </div>
+      <div class="form-group">
+        <input type="email" placeholder="Your Email" required />
+      </div>
+      <div class="form-group">
+        <input type="tel" placeholder="Your Phone Number" required />
+      </div>
+      <div class="form-group">
+        <input type="text" placeholder="Organization" />
+      </div>
+      <div class="form-group">
+        <textarea placeholder="Your Inquiry/Message" required></textarea>
+      </div>
+      <button type="submit">Send Message</button>
+            <p id="formResponse" style="color: green; display: none; margin-top: 10px;">
+    ✅ Your message has been received!
+  </p>
+
+    <!-- Direct Contact Info -->
+    <div class="contact-info">
+      <h3>Contact Details</h3>
+      <p>
+        <i class="fas fa-envelope"></i>
+        <a href="mailto:radipharm254@gmail.com">radipharm254@gmail.com</a>
+      </p>
+      <p>
+        <i class="fas fa-phone"></i>
+        <a href="tel:+254711638779">+254 711 638 779</a>
+      </p>
+      <p>
+        <i class="fas fa-phone"></i>
+        <a href="tel:+254722 842 823">+254722 842 823</a>
+      </p>
+
+      <!-- Clickable Google Map -->
+<div class="map-container" style="margin-top:10px;">
+  <a href="https://www.google.com/maps/place/Nairobi,+Kenya" target="_blank">
+    <iframe 
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.197123453568!2d36.8219468!3d-1.2920659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f10d9737bb7f3%3A0xdeb32d97dbe9d30!2sNairobi!5e0!3m2!1sen!2ske!4v1692456000000!5m2!1sen!2ske" 
+      width="600" 
+      height="300" 
+      style="border:0; border-radius:8px; width:100%; max-width:600px;" 
+      allowfullscreen="" 
+      loading="lazy">
+    </iframe>
+  </a>
+</div>
+    </div>
+  </div>
+</section>
+
+
 
 <footer class="footer">
-  <p>&copy; 2025 Radiance Pharmaceuticals. All Rights Reserved.</p>
+  <div class="footer-container">
+    <div class="footer-col">
+      <h3>Radiance Pharmaceuticals</h3>
+      <p>Eatview Business Park along Eaternbypass, Nairobi, Kenya</p>
+      <p><strong>Email:</strong> radipharm254@gmail.com</p>
+      <p><strong>Phone:</strong> +254 711 638 779 / +254 722 842 823</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 Radiance Pharmaceuticals. All rights reserved.</p>
+  </div>
 </footer>
+
 
 <script>
 function openTab(tabName) {
@@ -931,7 +1030,16 @@ setInterval(() => {
 }, 3000);
 
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const partnerCarousel = document.querySelector(".partners-carousel");
+  const clientCarousel = document.querySelector(".clients-carousel");
 
+  // Clone carousel items to create infinite loop effect
+  partnerCarousel.innerHTML += partnerCarousel.innerHTML;
+  clientCarousel.innerHTML += clientCarousel.innerHTML;
+});
+</script>
 
 </body>
 </html>
