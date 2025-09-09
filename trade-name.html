@@ -245,20 +245,20 @@
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script>
 async function init() {
   try {
-    const [productsResponse, classColorsResponse] = await Promise.all([
-      fetch('static/data/products.json'),
-      fetch('static/data/classColors.json')
-    ]);
+    // Fetch mapped products via proxy (API call under the hood)
+    const productsResponse = await fetch('/public/products?per_page=1000&sort=name&direction=asc');  // Adjust params as needed
+    const classColorsResponse = await fetch('/static/data/classColors.json');  // Keep local for colors
 
     if (!productsResponse.ok || !classColorsResponse.ok) {
       throw new Error('Failed to fetch data');
     }
 
     const products = await productsResponse.json();
+    // Handle pagination if needed: if (products.page < products.pages) fetch more...
+    const allProducts = products.products || [products];  // Flatten if single or array
     const classColors = await classColorsResponse.json();
 
     function svgPlaceholder(label, color = '#94a3b8') {
@@ -275,7 +275,7 @@ async function init() {
       section.innerHTML = '';
 
       const map = {};
-      products.forEach(d => {
+      allProducts.forEach(d => {  // Use allProducts
         if (filter && ![d.generic, d.trade, d.strength].some(v => v.toLowerCase().includes(filter.toLowerCase()))) return;
         const firstLetter = d.trade.charAt(0).toUpperCase();
         (map[firstLetter] ??= []).push(d);
@@ -286,7 +286,7 @@ async function init() {
         const items = map[letter].sort((a, b) => a.trade.localeCompare(b.trade));
         const cards = items.map(d => {
           const color = classColors[d.class] || '#94a3b8';
-          const img = svgPlaceholder(d.trade.split(' ')[0], color);
+          const img = d.image_urls?.[0] ? d.image_urls[0] : svgPlaceholder(d.trade.split(' ')[0], color);  // Use API image if available
           return `<div class="card">
             <div class="thumb"><img src="${img}" alt="${d.trade}" style="width:100%;height:100%;object-fit:cover"></div>
             <div class="body">
@@ -307,22 +307,51 @@ async function init() {
       el.innerHTML = letters.map(L => `<a href="#${L}">${L}</a>`).join('');
     }
 
-    function populateHoverMenus(products) {
+    async function populateHoverMenus(products) {
       const ddThera = document.getElementById('dd-thera');
       const ddGeneric = document.getElementById('dd-generic');
       const ddTrade = document.getElementById('dd-trade');
-      const classes = [...new Set(products.map(d => d.class))].sort((a, b) => a.localeCompare(b));
+
+      // Populate generics and trades as before
       const generics = [...new Set(products.map(d => d.generic))].sort((a, b) => a.localeCompare(b));
       const trades = [...new Set(products.map(d => d.trade))].sort((a, b) => a.localeCompare(b));
-      ddThera.innerHTML = classes.map(c => `<a href="therapeutic-class.html#${encodeURIComponent(c)}">${c}</a>`).join('');
       ddGeneric.innerHTML = generics.map(g => `<a href="generic-name.html#${encodeURIComponent(g)}">${g}</a>`).join('');
       ddTrade.innerHTML = trades.map(t => `<a href="trade-name.html#${encodeURIComponent(t)}">${t}</a>`).join('');
+
+      // Try to fetch categories from the public API (proxied at /public)
+      try {
+        const res = await fetch('/public/categories', { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) throw new Error('Categories fetch failed');
+        const payload = await res.json();
+        const cats = Array.isArray(payload) ? payload : (payload.categories || []);
+
+        if (cats.length === 0) throw new Error('No categories');
+
+        // Build HTML: for each category, show the category link and a sublist of product links
+        ddThera.innerHTML = cats.map(cat => {
+          // find matching products by category_id or fallback to class/name match
+          const matched = products.filter(p => (p.category_id && p.category_id === cat.id) || (p.class && p.class.toLowerCase() === (cat.name || '').toLowerCase()) || (p.category && p.category.toLowerCase() === (cat.name || '').toLowerCase()));
+          const items = matched.slice(0, 20).map(p => `<a href="trade-name.html#${encodeURIComponent(p.trade)}">${p.trade}</a>`).join('');
+          return `
+            <div class="dropdown-sub">
+              <a href="therapeutic-class.html#${encodeURIComponent(cat.name)}">${cat.name}</a>
+              <div class="dropdown-sub-content">
+                ${items || '<span style="padding:8px;display:block;color:#666">No products</span>'}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        // Fallback: use class names derived from products
+        const classes = [...new Set(products.map(d => d.class))].sort((a, b) => a.localeCompare(b));
+        ddThera.innerHTML = classes.map(c => `<a href="therapeutic-class.html#${encodeURIComponent(c)}">${c}</a>`).join('');
+      }
     }
 
-    document.getElementById('searchInput').addEventListener('input', e => byTrade(products, classColors, e.target.value));
-    populateHoverMenus(products);
+    document.getElementById('searchInput').addEventListener('input', e => byTrade(allProducts, classColors, e.target.value));
+    populateHoverMenus(allProducts);
     buildAlpha();
-    byTrade(products, classColors);
+    byTrade(allProducts, classColors);
 
     if (location.hash) {
       const target = decodeURIComponent(location.hash.slice(1));
