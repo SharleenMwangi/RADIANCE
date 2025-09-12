@@ -142,6 +142,22 @@ nav .btn:hover,
     margin-left: 15px;
 }
 
+/* Header-specific contact-info: add transitions for smooth hide/show when header gets scrolled */
+header .contact-info {
+    transition: opacity 220ms ease, transform 220ms ease, max-height 300ms ease;
+    will-change: opacity, transform;
+    max-height: 200px; /* large enough for header content */
+    overflow: hidden;
+}
+
+/* When header has the 'scrolled' class, gently hide the contact-info instead of using display:none */
+header.scrolled .contact-info {
+    opacity: 0;
+    transform: translateY(-6px);
+    max-height: 0;
+    pointer-events: none;
+}
+
 .phone-number {
     font-weight: 600;
     color: var(--primary);

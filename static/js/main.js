@@ -272,3 +272,32 @@ setInterval(() => {
     currentIndex = (currentIndex + 1) % items.length;
     items[currentIndex].classList.add("active");
 }, 3000);
+
+// Smooth header scrolled toggle: add/remove `scrolled` class when user scrolls past threshold
+(function addHeaderScrollListener() {
+    // safe guard: run after DOM is ready
+    function install() {
+        const header = document.querySelector('header');
+        if (!header) return;
+        const onScroll = () => {
+            try {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            } catch (e) {
+                // defensive: ignore errors
+            }
+        };
+        // initial state
+        onScroll();
+        window.addEventListener('scroll', onScroll, { passive: true });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', install);
+    } else {
+        install();
+    }
+})();

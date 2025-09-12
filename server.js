@@ -10,6 +10,10 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const PUBLIC_API_KEY = process.env.PUBLIC_API_KEY || '';
 const PUBLIC_API_BASE = process.env.PUBLIC_API_BASE || '';
+// Header name to use when sending the API key to upstream (case-insensitive)
+const PUBLIC_API_KEY_HEADER = process.env.PUBLIC_API_KEY_HEADER || 'X-API-Key';
+// Optional prefix to prepend to the key value (e.g. 'Bearer ')
+const PUBLIC_API_KEY_PREFIX = process.env.PUBLIC_API_KEY_PREFIX || '';
 const ALLOWED_EXTENSIONS = ['.html'];
 
 // Support comma-separated API bases in .env, pick the first as primary for proxying
@@ -89,6 +93,21 @@ app.use((req, _res, next) => {
     next();
 });
 
+// Redirect legacy URLs with .html to pretty routes (preserve query string)
+app.use((req, res, next) => {
+    try {
+        if (req.method !== 'GET') return next();
+        const p = req.path || '';
+        if (!p.endsWith('.html')) return next();
+        // Build new path without .html
+        const newPath = p.replace(/\.html$/i, '') || '/';
+        const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+        return res.redirect(301, newPath + qs);
+    } catch (e) {
+        return next();
+    }
+});
+
 // parse JSON bodies for forwarded requests
 app.use(express.json());
 
@@ -96,7 +115,7 @@ app.use(express.json());
 // Clients should use the injected meta `public-api-base` which will be `/proxy`
 // when PUBLIC_API_KEY is configured, causing calls to go to this route.
 // Mount-compatible proxy handler: app.use captures subpaths and is compatible with older router versions
-app.use('/proxy', async (req, res) => {
+app.use('/proxy', async(req, res) => {
     try {
         if (!PRIMARY_API_BASE) return res.status(502).json({ error: 'Upstream API not configured' });
 
@@ -109,7 +128,7 @@ app.use('/proxy', async (req, res) => {
         console.log(`Proxying ${req.method} ${req.originalUrl} -> ${upstreamUrl}`);
 
         const headers = {
-            'X-API-Key': PUBLIC_API_KEY || '',
+            [PUBLIC_API_KEY_HEADER]: `${PUBLIC_API_KEY_PREFIX}${PUBLIC_API_KEY}`,
             'Accept': 'application/json'
         };
         if (req.headers['content-type']) headers['Content-Type'] = req.headers['content-type'];
@@ -186,7 +205,7 @@ async function injectMeta(html) {
 }
 
 // Pretty URL middleware: serve /foo -> /foo.html when that file exists
-app.use(async (req, res, next) => {
+app.use(async(req, res, next) => {
     try {
         if (path.extname(req.path)) return next();
         const skipPrefixes = ['/public', '/static', '/api'];
@@ -213,7 +232,7 @@ app.use(async (req, res, next) => {
 });
 
 // Custom HTML route
-app.get(/^\/.*\.html$/i, async (req, res, next) => {
+app.get(/^\/.*\.html$/i, async(req, res, next) => {
     try {
         let reqPath = req.path === '/' ? '/index.html' : req.path;
         const safePath = path.normalize(reqPath).replace(/^\/+/, '');
@@ -258,7 +277,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Unexpected server error' });
 });
 
-app.listen(PORT, async (err) => {
+app.listen(PORT, async(err) => {
     if (err) {
         console.error(`Failed to start server:`, err);
         return;
@@ -277,6 +296,10 @@ app.listen(PORT, async (err) => {
         try {
             const testUrl = new URL('/public/products?per_page=1', PRIMARY_API_BASE);
             // prefer X-API-Key only
+            const testHeaders = {
+                [PUBLIC_API_KEY_HEADER]: `${PUBLIC_API_KEY_PREFIX}${PUBLIC_API_KEY}`,
+                'Accept': 'application/json'
+            };
             const r = await fetch(testUrl.toString(), {
                 method: 'GET',
                 headers: {
