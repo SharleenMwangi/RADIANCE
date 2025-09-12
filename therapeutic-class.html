@@ -1,328 +1,770 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Products by Therapeutic Class | Radiance Pharmaceuticals</title>
-  <link rel="stylesheet" href="style.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Products by Therapeutic Class | Radiance Pharmaceuticals</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <style>
-    /* --- Page-specific polishing that complements your style.css --- */
-    .page-header { padding: 24px 0; }
-    .page-header h1 { font-family: "Playfair Display", serif; margin: 0 0 6px; font-size: 2rem; }
-    .page-header p { margin: 0; color: #555; }
-
-    .toolbar { display:flex; gap:12px; align-items:center; margin: 18px 0 10px; flex-wrap:wrap; }
-    .search-input { flex:1; min-width:240px; padding:10px 12px; border:1px solid #e2e2e2; border-radius:12px; }
-    .hint { color:#777; font-size:.9rem; }
-
-    .accordion { border-radius:14px; overflow:hidden; border:1px solid #eee; }
-    .acc-item + .acc-item { border-top:1px solid #eee; }
-
-    .acc-header { display:flex; justify-content:space-between; align-items:center; padding:14px 16px; background:#f7f9fc; cursor:pointer; }
-    .acc-header h3 { margin:0; font-size:1.05rem; }
-    .acc-body { padding:12px 14px 18px; display:none; animation: acc .25s ease; background:#fff; }
-    .acc-item.open .acc-body { display:block; }
-    @keyframes acc { from {opacity:0; transform: translateY(-4px);} to {opacity:1; transform: translateY(0);} }
-
-    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap:14px; }
-    .card { border:1px solid #eee; border-radius:16px; overflow:hidden; background:#fff; display:flex; flex-direction:column; }
-    .card .thumb { width:100%; aspect-ratio: 4/3; background:#eef2f7; display:flex; align-items:center; justify-content:center; }
-    .card .body { padding:12px; }
-    .name { font-weight:600; margin:0 0 6px; }
-    .strength { margin:0 0 6px; color:#555; font-size:.95rem; }
-    .price { margin:0; font-size:.92rem; color:#333; line-height:1.35; }
-    .tag { font-size:.8rem; color:#fff; padding:3px 8px; border-radius:999px; display:inline-block; }
-    .KSH { font-weight:600; }
-
-    /* Color codes per therapeutic class */
-    .c-Antibiotics { background:#2663eb; }
-    .c-Pain { background:#f97316; }
-    .c-Vitamins { background:#16a34a; }
-    .c-Injections { background:#a855f7; }
-    .c-Ophthalmic { background:#0ea5e9; }
-    .c-Respiratory { background:#059669; }
-    .c-Gastro { background:#dc2626; }
-    .c-Hormonal { background:#db2777; }
-    .c-Diagnostic { background:#64748b; }
-
-    /* back button consistency */
-    .nav-actions { margin-left:auto; }
-    .btn-back { background:#eee; color:#333; padding:8px 12px; border-radius:10px; text-decoration:none; }
-    .btn-back:hover { background:#ddd; }
-    .layout {
-  display: flex;
-  min-height: 100vh;
-  font-family: 'Poppins', sans-serif;
-}
-
-.sidebar {
-  width: 250px;
-  background: #f9f9f9;
-  border-right: 1px solid #ddd;
-  padding: 1rem;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-}
-
-.sidebar h2 {
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar li {
-  margin: 0.5rem 0;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 5px;
-  transition: background 0.3s;
-}
-
-.sidebar li:hover,
-.sidebar li.active {
-  background: #007BFF;
-  color: white;
-}
-
-.content {
-  flex: 1;
-  padding: 2rem;
-}
-
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1rem;
-}
-
-.card {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-}
-
-  </style>
+    <style>
+        /* --- Page-specific polishing that complements your style.css --- */
+        
+        .page-header {
+            padding: 24px 0;
+        }
+        
+        .page-header h1 {
+            font-family: "Playfair Display", serif;
+            margin: 0 0 6px;
+            font-size: 2rem;
+        }
+        
+        .page-header p {
+            margin: 0;
+            color: #555;
+        }
+        
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin: 18px 0 10px;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 240px;
+            padding: 10px 12px;
+            border: 1px solid #e2e2e2;
+            border-radius: 12px;
+        }
+        
+        .hint {
+            color: #777;
+            font-size: .9rem;
+        }
+        
+        .accordion {
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+        
+        .acc-item+.acc-item {
+            border-top: 1px solid #eee;
+        }
+        
+        .acc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: #f7f9fc;
+            cursor: pointer;
+        }
+        
+        .acc-header h3 {
+            margin: 0;
+            font-size: 1.05rem;
+        }
+        
+        .acc-body {
+            padding: 12px 14px 18px;
+            display: none;
+            animation: acc .25s ease;
+            background: #fff;
+        }
+        
+        .acc-item.open .acc-body {
+            display: block;
+        }
+        
+        @keyframes acc {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 14px;
+        }
+        
+        .card {
+            border: 1px solid #eee;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card .thumb {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #eef2f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card .body {
+            padding: 12px;
+        }
+        
+        .name {
+            font-weight: 600;
+            margin: 0 0 6px;
+        }
+        
+        .strength {
+            margin: 0 0 6px;
+            color: #555;
+            font-size: .95rem;
+        }
+        
+        .price {
+            margin: 0;
+            font-size: .92rem;
+            color: #333;
+            line-height: 1.35;
+        }
+        
+        .tag {
+            font-size: .8rem;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 999px;
+            display: inline-block;
+        }
+        
+        .KSH {
+            font-weight: 600;
+        }
+        /* Color codes per therapeutic class */
+        
+        .c-Antibiotics {
+            background: #2663eb;
+        }
+        
+        .c-Pain {
+            background: #f97316;
+        }
+        
+        .c-Vitamins {
+            background: #16a34a;
+        }
+        
+        .c-Injections {
+            background: #a855f7;
+        }
+        
+        .c-Ophthalmic {
+            background: #0ea5e9;
+        }
+        
+        .c-Respiratory {
+            background: #059669;
+        }
+        
+        .c-Gastro {
+            background: #dc2626;
+        }
+        
+        .c-Hormonal {
+            background: #db2777;
+        }
+        
+        .c-Diagnostic {
+            background: #64748b;
+        }
+        /* back button consistency */
+        
+        .nav-actions {
+            margin-left: auto;
+        }
+        
+        .btn-back {
+            background: #eee;
+            color: #333;
+            padding: 8px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+        }
+        
+        .btn-back:hover {
+            background: #ddd;
+        }
+        
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: #f9f9f9;
+            border-right: 1px solid #ddd;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .sidebar h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .sidebar li {
+            margin: 0.5rem 0;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .sidebar li:hover,
+        .sidebar li.active {
+            background: #007BFF;
+            color: white;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 2rem;
+        }
+        
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+        
+        .card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+        }
+    </style>
 </head>
+
 <body>
 
-<header>
-  <div class="container">
-    <div class="branding">
-      <img src="static/images/Logo.png" alt="Radiance Logo" class="logo"/>
-      <div class="contact-info">
-        <a href="tel:+254711638779" class="phone-number"><i class="fas fa-phone"></i> +254 711 638 779</a>
-        <a href="tel:+254722842823" class="phone-number"><i class="fas fa-phone"></i> +254 722 842 823</a>
-        <span class="hours"><i class="fas fa-clock"></i> Open: Mon - Fri 9.00 am - 5.00 pm</span>
-      </div>
-    </div>
+    <header>
+        <div class="container">
+            <div class="branding">
+                <img src="static/images/Logo.png" alt="Radiance Logo" class="logo" />
+                <div class="contact-info">
+                    <a href="tel:+254711638779" class="phone-number"><i class="fas fa-phone"></i> +254 711 638 779</a>
+                    <a href="tel:+254722842823" class="phone-number"><i class="fas fa-phone"></i> +254 722 842 823</a>
+                    <span class="hours"><i class="fas fa-clock"></i> Open: Mon - Fri 9.00 am - 5.00 pm</span>
+                </div>
+            </div>
 
-    <nav>
-      <a href="index.html#about">About Us</a>
-      <a href="index.html#vision-mission">Vision & Mission</a>
+            <nav>
+                <a href="index.html#about">About Us</a>
+                <a href="index.html#vision-mission">Vision & Mission</a>
 
-      <div class="dropdown">
-        <a class="dropbtn">Our Products</a>
-        <div class="dropdown-content">
-          <div class="dropdown-sub">
-            <a href="therapeutic-class.html">Therapeutic Class</a>
-            <div class="dropdown-sub-content" id="dd-thera"></div>
-          </div>
-          <div class="dropdown-sub">
-            <a href="generic-name.html">Generic Name</a>
-            <div class="dropdown-sub-content" id="dd-generic"></div>
-          </div>
-          <div class="dropdown-sub">
-            <a href="trade-name.html">Trade Name</a>
-            <div class="dropdown-sub-content" id="dd-trade"></div>
-          </div>
+                <div class="dropdown">
+                    <a class="dropbtn">Our Products</a>
+                    <div class="dropdown-content">
+                        <div class="dropdown-sub">
+                            <a href="therapeutic-class.html">Therapeutic Class</a>
+                            <div class="dropdown-sub-content" id="dd-thera"></div>
+                        </div>
+                        <div class="dropdown-sub">
+                            <a href="generic-name.html">Generic Name</a>
+                            <div class="dropdown-sub-content" id="dd-generic"></div>
+                        </div>
+                        <div class="dropdown-sub">
+                            <a href="catalogue.html">Trade Name</a>
+                            <div class="dropdown-sub-content" id="dd-trade"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="index.html#contact">Contact</a>
+                <div class="nav-actions">
+                    <a href="index.html" class="btn btn-back">← Back</a>
+                </div>
+            </nav>
         </div>
-      </div>
+    </header>
 
-      <a href="index.html#contact">Contact</a>
-      <div class="nav-actions">
-        <a href="index.html" class="btn btn-back">← Back</a>
-      </div>
-    </nav>
-  </div>
-</header>
+    <main class="container">
+        <div class="page-header">
+            <h1>Products by Therapeutic Class</h1>
+            <p>Browse Radiance products grouped by indication. Use the search to quickly find a product.</p>
+        </div>
 
-<main class="container">
-  <div class="page-header">
-    <h1>Products by Therapeutic Class</h1>
-    <p>Browse Radiance products grouped by indication. Use the search to quickly find a product.</p>
-  </div>
+        <div class="toolbar">
+            <input id="search" class="search-input" placeholder="Search by trade, generic, strength…" />
+            <span class="hint"><i class="fa fa-info-circle"></i> Tip: Click a class header to expand/collapse.</span>
+        </div>
 
-  <div class="toolbar">
-    <input id="search" class="search-input" placeholder="Search by trade, generic, strength…"/>
-    <span class="hint"><i class="fa fa-info-circle"></i> Tip: Click a class header to expand/collapse.</span>
-  </div>
+        <div class="layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <h2>Therapeutic Classes</h2>
+                <ul id="class-list"></ul>
+            </aside>
 
-  <div class="layout">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <h2>Therapeutic Classes</h2>
-    <ul id="class-list"></ul>
-  </aside>
-
-  <!-- Main content -->
-  <main class="content">
-    <section id="accordion"></section>
-  </main>
-</div>
+            <!-- Main content -->
+            <main class="content">
+                <section id="accordion"></section>
+            </main>
+        </div>
 
 
-  <section id="accordion" class="accordion"></section>
-</main>
+        <section id="accordion" class="accordion"></section>
+    </main>
 
-<footer class="footer">
-  <div class="footer-container">
-    <div class="footer-col">
-      <h3>Radiance Pharmaceuticals</h3>
-      <p>Eastview Business Park along Eaternbypass, Nairobi, Kenya</p>
-      <p><strong>Email:</strong> radipharm254@gmail.com</p>
-      <p><strong>Phone:</strong> +254 711 638 779 / +254 722 842 823</p>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>&copy; 2025 Radiance Pharmaceuticals. All rights reserved.</p>
-  </div>
-</footer>
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3>Radiance Pharmaceuticals</h3>
+                <p>Eastview Business Park along Eaternbypass, Nairobi, Kenya</p>
+                <p><strong>Email:</strong> radipharm254@gmail.com</p>
+                <p><strong>Phone:</strong> +254 711 638 779 / +254 722 842 823</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Radiance Pharmaceuticals. All rights reserved.</p>
+        </div>
+    </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-/* ====== MASTER DATA (from your list) ======
-   Fields: trade (brand), generic, strength/pack, tradePrice, retailPrice, class
-*/
-const DATA = [
-  // ----- Antibiotics -----
-  {trade:"ADORA 500 CAPSULES", generic:"Cefadroxil", strength:"500mg • 20's", tradePrice:450, retailPrice:599, class:"Antibiotics"},
-  {trade:"ADORA 60ML", generic:"Cefadroxil", strength:"125mg/5ml • 60ml", tradePrice:250, retailPrice:333, class:"Antibiotics"},
-  {trade:"ADORA 100 ML", generic:"Cefadroxil", strength:"125mg/5ml • 100ml", tradePrice:300, retailPrice:399, class:"Antibiotics"},
-  {trade:"EMIXEF 50ML SUSPENSION", generic:"Cefixime", strength:"100mg/5ml • 50ml", tradePrice:450, retailPrice:599, class:"Antibiotics"},
-  {trade:"KILBAC SUSPENSION", generic:"Cefuroxime", strength:"125mg/5ml • 70ml", tradePrice:500, retailPrice:665, class:"Antibiotics"},
-  {trade:"XIMEPROX 50 SUSPENSION", generic:"Cefpodoxime proxetil", strength:"40mg/5ml • 50ml", tradePrice:500, retailPrice:665, class:"Antibiotics"},
-  {trade:"XIMEPROX 100 SUSPENSION", generic:"Cefpodoxime proxetil", strength:"40mg/5ml • 100ml", tradePrice:700, retailPrice:931, class:"Antibiotics"},
-  {trade:"XIMEPROX DS SUSPENSION", generic:"Cefpodoxime", strength:"80mg/5ml • 50ml", tradePrice:700, retailPrice:931, class:"Antibiotics"},
-  {trade:"FLUX 125 SUSPENSION", generic:"Flucloxacillin", strength:"125mg/5ml • 100ml", tradePrice:220, retailPrice:293, class:"Antibiotics"},
-  {trade:"FLUX DS SUSPENSION", generic:"Flucloxacillin", strength:"250mg/5ml • 100ml", tradePrice:360, retailPrice:479, class:"Antibiotics"},
-  {trade:"FLUX 250 CAPSULES", generic:"Flucloxacillin", strength:"250mg • 28's", tradePrice:346, retailPrice:460, class:"Antibiotics"},
-  {trade:"FLUX 500 CAPSULES", generic:"Flucloxacillin", strength:"500mg • 28's", tradePrice:628, retailPrice:835, class:"Antibiotics"},
-  {trade:"FLUX 500 INJECTION", generic:"Flucloxacillin", strength:"500mg PFI • 50's", tradePrice:3500, retailPrice:null, class:"Antibiotics"},
-  {trade:"FLOVANIS TABLETS", generic:"Levofloxacin", strength:"500mg • 10's", tradePrice:560, retailPrice:745, class:"Antibiotics"},
-  {trade:"TRAXON 1G INJECTION", generic:"Ceftriaxone", strength:"1g PFI + diluent • 1's", tradePrice:300, retailPrice:399, class:"Antibiotics"},
-  {trade:"SEFUR 125 SUSPENSION", generic:"Cefuroxime", strength:"125mg/5ml • 70ml", tradePrice:520, retailPrice:695, class:"Antibiotics"},
-  {trade:"SEFUR DS SUSPENSION", generic:"Cefuroxime", strength:"250mg/5ml • 50ml", tradePrice:690, retailPrice:918, class:"Antibiotics"},
-  {trade:"SEFUR 750 INJECTION", generic:"Cefuroxime", strength:"750mg PFI + diluent • 1's", tradePrice:200, retailPrice:266, class:"Antibiotics"},
-  {trade:"AZICIN 500 TABLETS", generic:"Azithromycin", strength:"500mg • 3's", tradePrice:300, retailPrice:399, class:"Antibiotics"},
-  {trade:"AZICIN SUSPENSION", generic:"Azithromycin", strength:"200mg/5ml • 20ml", tradePrice:270, retailPrice:351, class:"Antibiotics"},
-  {trade:"TUNACLAV 228 DT", generic:"Amoxicillin + Clavulanic acid", strength:"200/28.5mg • 10's", tradePrice:300, retailPrice:399, class:"Antibiotics"},
-  {trade:"TUNACLAV 312 DT", generic:"Amoxicillin + Clavulanic acid", strength:"250/62.5mg • 10's", tradePrice:360, retailPrice:479, class:"Antibiotics"},
-  {trade:"TUNACLAV 457 DT", generic:"Amoxicillin + Clavulanic acid", strength:"400/57mg • 10's", tradePrice:400, retailPrice:532, class:"Antibiotics"},
-  {trade:"TUNAMOX 250 DT", generic:"Amoxicillin", strength:"250mg • 20's", tradePrice:200, retailPrice:266, class:"Antibiotics"},
-  {trade:"FLOVANIS", generic:"Levofloxacin", strength:"500mg • 10's", tradePrice:560, retailPrice:745, class:"Antibiotics"},
-  // ----- Pain Relief & Anti-inflammatory / Neuro / Psych crossover -----
-  {trade:"CELENTA 200 CAPSULES", generic:"Celecoxib", strength:"200mg • 10's", tradePrice:250, retailPrice:333, class:"Pain Relief & Anti-inflammatory"},
-  {trade:"MOVEX TABLETS", generic:"Aceclofenac", strength:"100mg • 50's", tradePrice:450, retailPrice:599, class:"Pain Relief & Anti-inflammatory"},
-  {trade:"PREGABEN 75 CAPSULES", generic:"Pregabalin", strength:"75mg • 30's", tradePrice:600, retailPrice:798, class:"Pain Relief & Anti-inflammatory"},
-  {trade:"PREGABEN 150 CAPSULES", generic:"Pregabalin", strength:"150mg • 20's", tradePrice:750, retailPrice:998, class:"Pain Relief & Anti-inflammatory"},
-  {trade:"REPOSE TABLETS", generic:"Sertraline", strength:"50mg • 50's", tradePrice:800, retailPrice:1064, class:"Pain Relief & Anti-inflammatory"},
-  {trade:"ROBAPAM 3 TABLETS", generic:"Bromazepam", strength:"3mg • 30's", tradePrice:600, retailPrice:798, class:"Pain Relief & Anti-inflammatory"},
-  {trade:"OLANAP 10 TABLETS", generic:"Olanzapine", strength:"10mg • 50's", tradePrice:600, retailPrice:798, class:"Pain Relief & Anti-inflammatory"},
-  {trade:"TIGINOR 20", generic:"Atorvastatin", strength:"20mg • 20's", tradePrice:320, retailPrice:426, class:"Pain Relief & Anti-inflammatory"},
-  {trade:"VALEX SYRUP", generic:"Sodium Valproate", strength:"200mg/5ml • 100ml", tradePrice:350, retailPrice:466, class:"Pain Relief & Anti-inflammatory"},
-  {trade:"VALEX 200 CR TABLETS", generic:"Sodium Valproate + Valproic acid", strength:"200mg chrono • 50's", tradePrice:600, retailPrice:798, class:"Pain Relief & Anti-inflammatory"},
-  {trade:"VALEX 500 CR TABLETS", generic:"Sodium Valproate + Valproic acid", strength:"500mg chrono • 28's", tradePrice:800, retailPrice:1064, class:"Pain Relief & Anti-inflammatory"},
-  // ----- Vitamins & Supplements -----
-  {trade:"ALNEED GOLD CAPSULE", generic:"Iron polymaltose + Folic acid + Zinc + Vit B-complex", strength:"30's", tradePrice:500, retailPrice:665, class:"Vitamins & Supplements"},
-  {trade:"CAVIC C PLUS EFFERVESCENT TABLETS", generic:"Calcium salts + Vit C & D", strength:"10's", tradePrice:400, retailPrice:532, class:"Vitamins & Supplements"},
-  {trade:"CEEGRAM EFFERVESCENT TABLETS", generic:"Ascorbic Acid (Vitamin C)", strength:"1000mg • 10's", tradePrice:230, retailPrice:306, class:"Vitamins & Supplements"},
-  {trade:"INOVIT E 400 CAPSULES", generic:"Vitamin E", strength:"400 IU • 30's", tradePrice:600, retailPrice:798, class:"Vitamins & Supplements"},
-  {trade:"OSTEO D ORAL DROPS", generic:"Vitamin D (paediatric)", strength:"30ml", tradePrice:400, retailPrice:532, class:"Vitamins & Supplements"},
-  {trade:"VASCO SYRUP", generic:"Vitamin C", strength:"100mg/5ml • 100ml", tradePrice:140, retailPrice:186, class:"Vitamins & Supplements"},
-  {trade:"AURO D3 SOLUTION", generic:"Vitamin D3", strength:"60,000 IU • 4x5ml", tradePrice:300, retailPrice:399, class:"Vitamins & Supplements"},
-  {trade:"IMMUPRO SYRUP", generic:"Zinc Gluconate", strength:"20mg/5ml • 100ml", tradePrice:200, retailPrice:266, class:"Vitamins & Supplements"},
-  {trade:"COLITROL", generic:"Calcitriol", strength:"0.25mcg • 30's", tradePrice:700, retailPrice:931, class:"Vitamins & Supplements"},
-  {trade:"COMPIRON", generic:"Iron polymaltose", strength:"200mg eq to 50mg iron/ml • 30ml", tradePrice:160, retailPrice:213, class:"Vitamins & Supplements"},
-  {trade:"VITABION INJECTION", generic:"Vitamin B1+B6+B12", strength:"Injection • 5's", tradePrice:420, retailPrice:559, class:"Vitamins & Supplements"}
-];
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script>
+        /* ====== MASTER DATA (from your list) ======
+           Fields: trade (brand), generic, strength/pack, tradePrice, retailPrice, class
+        */
+        const DATA = [
+            // ----- Antibiotics -----
+            {
+                trade: "ADORA 500 CAPSULES",
+                generic: "Cefadroxil",
+                strength: "500mg • 20's",
+                tradePrice: 450,
+                retailPrice: 599,
+                class: "Antibiotics"
+            }, {
+                trade: "ADORA 60ML",
+                generic: "Cefadroxil",
+                strength: "125mg/5ml • 60ml",
+                tradePrice: 250,
+                retailPrice: 333,
+                class: "Antibiotics"
+            }, {
+                trade: "ADORA 100 ML",
+                generic: "Cefadroxil",
+                strength: "125mg/5ml • 100ml",
+                tradePrice: 300,
+                retailPrice: 399,
+                class: "Antibiotics"
+            }, {
+                trade: "EMIXEF 50ML SUSPENSION",
+                generic: "Cefixime",
+                strength: "100mg/5ml • 50ml",
+                tradePrice: 450,
+                retailPrice: 599,
+                class: "Antibiotics"
+            }, {
+                trade: "KILBAC SUSPENSION",
+                generic: "Cefuroxime",
+                strength: "125mg/5ml • 70ml",
+                tradePrice: 500,
+                retailPrice: 665,
+                class: "Antibiotics"
+            }, {
+                trade: "XIMEPROX 50 SUSPENSION",
+                generic: "Cefpodoxime proxetil",
+                strength: "40mg/5ml • 50ml",
+                tradePrice: 500,
+                retailPrice: 665,
+                class: "Antibiotics"
+            }, {
+                trade: "XIMEPROX 100 SUSPENSION",
+                generic: "Cefpodoxime proxetil",
+                strength: "40mg/5ml • 100ml",
+                tradePrice: 700,
+                retailPrice: 931,
+                class: "Antibiotics"
+            }, {
+                trade: "XIMEPROX DS SUSPENSION",
+                generic: "Cefpodoxime",
+                strength: "80mg/5ml • 50ml",
+                tradePrice: 700,
+                retailPrice: 931,
+                class: "Antibiotics"
+            }, {
+                trade: "FLUX 125 SUSPENSION",
+                generic: "Flucloxacillin",
+                strength: "125mg/5ml • 100ml",
+                tradePrice: 220,
+                retailPrice: 293,
+                class: "Antibiotics"
+            }, {
+                trade: "FLUX DS SUSPENSION",
+                generic: "Flucloxacillin",
+                strength: "250mg/5ml • 100ml",
+                tradePrice: 360,
+                retailPrice: 479,
+                class: "Antibiotics"
+            }, {
+                trade: "FLUX 250 CAPSULES",
+                generic: "Flucloxacillin",
+                strength: "250mg • 28's",
+                tradePrice: 346,
+                retailPrice: 460,
+                class: "Antibiotics"
+            }, {
+                trade: "FLUX 500 CAPSULES",
+                generic: "Flucloxacillin",
+                strength: "500mg • 28's",
+                tradePrice: 628,
+                retailPrice: 835,
+                class: "Antibiotics"
+            }, {
+                trade: "FLUX 500 INJECTION",
+                generic: "Flucloxacillin",
+                strength: "500mg PFI • 50's",
+                tradePrice: 3500,
+                retailPrice: null,
+                class: "Antibiotics"
+            }, {
+                trade: "FLOVANIS TABLETS",
+                generic: "Levofloxacin",
+                strength: "500mg • 10's",
+                tradePrice: 560,
+                retailPrice: 745,
+                class: "Antibiotics"
+            }, {
+                trade: "TRAXON 1G INJECTION",
+                generic: "Ceftriaxone",
+                strength: "1g PFI + diluent • 1's",
+                tradePrice: 300,
+                retailPrice: 399,
+                class: "Antibiotics"
+            }, {
+                trade: "SEFUR 125 SUSPENSION",
+                generic: "Cefuroxime",
+                strength: "125mg/5ml • 70ml",
+                tradePrice: 520,
+                retailPrice: 695,
+                class: "Antibiotics"
+            }, {
+                trade: "SEFUR DS SUSPENSION",
+                generic: "Cefuroxime",
+                strength: "250mg/5ml • 50ml",
+                tradePrice: 690,
+                retailPrice: 918,
+                class: "Antibiotics"
+            }, {
+                trade: "SEFUR 750 INJECTION",
+                generic: "Cefuroxime",
+                strength: "750mg PFI + diluent • 1's",
+                tradePrice: 200,
+                retailPrice: 266,
+                class: "Antibiotics"
+            }, {
+                trade: "AZICIN 500 TABLETS",
+                generic: "Azithromycin",
+                strength: "500mg • 3's",
+                tradePrice: 300,
+                retailPrice: 399,
+                class: "Antibiotics"
+            }, {
+                trade: "AZICIN SUSPENSION",
+                generic: "Azithromycin",
+                strength: "200mg/5ml • 20ml",
+                tradePrice: 270,
+                retailPrice: 351,
+                class: "Antibiotics"
+            }, {
+                trade: "TUNACLAV 228 DT",
+                generic: "Amoxicillin + Clavulanic acid",
+                strength: "200/28.5mg • 10's",
+                tradePrice: 300,
+                retailPrice: 399,
+                class: "Antibiotics"
+            }, {
+                trade: "TUNACLAV 312 DT",
+                generic: "Amoxicillin + Clavulanic acid",
+                strength: "250/62.5mg • 10's",
+                tradePrice: 360,
+                retailPrice: 479,
+                class: "Antibiotics"
+            }, {
+                trade: "TUNACLAV 457 DT",
+                generic: "Amoxicillin + Clavulanic acid",
+                strength: "400/57mg • 10's",
+                tradePrice: 400,
+                retailPrice: 532,
+                class: "Antibiotics"
+            }, {
+                trade: "TUNAMOX 250 DT",
+                generic: "Amoxicillin",
+                strength: "250mg • 20's",
+                tradePrice: 200,
+                retailPrice: 266,
+                class: "Antibiotics"
+            }, {
+                trade: "FLOVANIS",
+                generic: "Levofloxacin",
+                strength: "500mg • 10's",
+                tradePrice: 560,
+                retailPrice: 745,
+                class: "Antibiotics"
+            },
+            // ----- Pain Relief & Anti-inflammatory / Neuro / Psych crossover -----
+            {
+                trade: "CELENTA 200 CAPSULES",
+                generic: "Celecoxib",
+                strength: "200mg • 10's",
+                tradePrice: 250,
+                retailPrice: 333,
+                class: "Pain Relief & Anti-inflammatory"
+            }, {
+                trade: "MOVEX TABLETS",
+                generic: "Aceclofenac",
+                strength: "100mg • 50's",
+                tradePrice: 450,
+                retailPrice: 599,
+                class: "Pain Relief & Anti-inflammatory"
+            }, {
+                trade: "PREGABEN 75 CAPSULES",
+                generic: "Pregabalin",
+                strength: "75mg • 30's",
+                tradePrice: 600,
+                retailPrice: 798,
+                class: "Pain Relief & Anti-inflammatory"
+            }, {
+                trade: "PREGABEN 150 CAPSULES",
+                generic: "Pregabalin",
+                strength: "150mg • 20's",
+                tradePrice: 750,
+                retailPrice: 998,
+                class: "Pain Relief & Anti-inflammatory"
+            }, {
+                trade: "REPOSE TABLETS",
+                generic: "Sertraline",
+                strength: "50mg • 50's",
+                tradePrice: 800,
+                retailPrice: 1064,
+                class: "Pain Relief & Anti-inflammatory"
+            }, {
+                trade: "ROBAPAM 3 TABLETS",
+                generic: "Bromazepam",
+                strength: "3mg • 30's",
+                tradePrice: 600,
+                retailPrice: 798,
+                class: "Pain Relief & Anti-inflammatory"
+            }, {
+                trade: "OLANAP 10 TABLETS",
+                generic: "Olanzapine",
+                strength: "10mg • 50's",
+                tradePrice: 600,
+                retailPrice: 798,
+                class: "Pain Relief & Anti-inflammatory"
+            }, {
+                trade: "TIGINOR 20",
+                generic: "Atorvastatin",
+                strength: "20mg • 20's",
+                tradePrice: 320,
+                retailPrice: 426,
+                class: "Pain Relief & Anti-inflammatory"
+            }, {
+                trade: "VALEX SYRUP",
+                generic: "Sodium Valproate",
+                strength: "200mg/5ml • 100ml",
+                tradePrice: 350,
+                retailPrice: 466,
+                class: "Pain Relief & Anti-inflammatory"
+            }, {
+                trade: "VALEX 200 CR TABLETS",
+                generic: "Sodium Valproate + Valproic acid",
+                strength: "200mg chrono • 50's",
+                tradePrice: 600,
+                retailPrice: 798,
+                class: "Pain Relief & Anti-inflammatory"
+            }, {
+                trade: "VALEX 500 CR TABLETS",
+                generic: "Sodium Valproate + Valproic acid",
+                strength: "500mg chrono • 28's",
+                tradePrice: 800,
+                retailPrice: 1064,
+                class: "Pain Relief & Anti-inflammatory"
+            },
+            // ----- Vitamins & Supplements -----
+            {
+                trade: "ALNEED GOLD CAPSULE",
+                generic: "Iron polymaltose + Folic acid + Zinc + Vit B-complex",
+                strength: "30's",
+                tradePrice: 500,
+                retailPrice: 665,
+                class: "Vitamins & Supplements"
+            }, {
+                trade: "CAVIC C PLUS EFFERVESCENT TABLETS",
+                generic: "Calcium salts + Vit C & D",
+                strength: "10's",
+                tradePrice: 400,
+                retailPrice: 532,
+                class: "Vitamins & Supplements"
+            }, {
+                trade: "CEEGRAM EFFERVESCENT TABLETS",
+                generic: "Ascorbic Acid (Vitamin C)",
+                strength: "1000mg • 10's",
+                tradePrice: 230,
+                retailPrice: 306,
+                class: "Vitamins & Supplements"
+            }, {
+                trade: "INOVIT E 400 CAPSULES",
+                generic: "Vitamin E",
+                strength: "400 IU • 30's",
+                tradePrice: 600,
+                retailPrice: 798,
+                class: "Vitamins & Supplements"
+            }, {
+                trade: "OSTEO D ORAL DROPS",
+                generic: "Vitamin D (paediatric)",
+                strength: "30ml",
+                tradePrice: 400,
+                retailPrice: 532,
+                class: "Vitamins & Supplements"
+            }, {
+                trade: "VASCO SYRUP",
+                generic: "Vitamin C",
+                strength: "100mg/5ml • 100ml",
+                tradePrice: 140,
+                retailPrice: 186,
+                class: "Vitamins & Supplements"
+            }, {
+                trade: "AURO D3 SOLUTION",
+                generic: "Vitamin D3",
+                strength: "60,000 IU • 4x5ml",
+                tradePrice: 300,
+                retailPrice: 399,
+                class: "Vitamins & Supplements"
+            }, {
+                trade: "IMMUPRO SYRUP",
+                generic: "Zinc Gluconate",
+                strength: "20mg/5ml • 100ml",
+                tradePrice: 200,
+                retailPrice: 266,
+                class: "Vitamins & Supplements"
+            }, {
+                trade: "COLITROL",
+                generic: "Calcitriol",
+                strength: "0.25mcg • 30's",
+                tradePrice: 700,
+                retailPrice: 931,
+                class: "Vitamins & Supplements"
+            }, {
+                trade: "COMPIRON",
+                generic: "Iron polymaltose",
+                strength: "200mg eq to 50mg iron/ml • 30ml",
+                tradePrice: 160,
+                retailPrice: 213,
+                class: "Vitamins & Supplements"
+            }, {
+                trade: "VITABION INJECTION",
+                generic: "Vitamin B1+B6+B12",
+                strength: "Injection • 5's",
+                tradePrice: 420,
+                retailPrice: 559,
+                class: "Vitamins & Supplements"
+            }
+        ];
 
-/* ==== Utilities ==== */
-const CLASS_COLORS = {
-  "Antibiotics":"c-Antibiotics",
-  "Pain Relief & Anti-inflammatory":"c-Pain",
-  "Vitamins & Supplements":"c-Vitamins",
-  "Injections":"c-Injections",
-  "Eye/Ear & Nasal Drops":"c-Ophthalmic",
-  "Respiratory & Allergy":"c-Respiratory",
-  "Gastrointestinal":"c-Gastro",
-  "Hormonal & Reproductive Health":"c-Hormonal",
-  "Diagnostic Kits":"c-Diagnostic"
-};
+        /* ==== Utilities ==== */
+        const CLASS_COLORS = {
+            "Antibiotics": "c-Antibiotics",
+            "Pain Relief & Anti-inflammatory": "c-Pain",
+            "Vitamins & Supplements": "c-Vitamins",
+            "Injections": "c-Injections",
+            "Eye/Ear & Nasal Drops": "c-Ophthalmic",
+            "Respiratory & Allergy": "c-Respiratory",
+            "Gastrointestinal": "c-Gastro",
+            "Hormonal & Reproductive Health": "c-Hormonal",
+            "Diagnostic Kits": "c-Diagnostic"
+        };
 
-function svgPlaceholder(label, color='#e5e7eb') {
-  const txt = encodeURIComponent(label);
-  return `data:image/svg+xml;utf8,` +
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'>`+
-    `<rect width='400' height='300' fill='${color}'/>`+
-    `<text x='50%' y='52%' dominant-baseline='middle' text-anchor='middle' font-family='Poppins,Arial' font-size='28' fill='white'>${txt}</text>`+
-    `</svg>`;
-}
+        function svgPlaceholder(label, color = '#e5e7eb') {
+            const txt = encodeURIComponent(label);
+            return `data:image/svg+xml;utf8,` +
+                `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'>` +
+                `<rect width='400' height='300' fill='${color}'/>` +
+                `<text x='50%' y='52%' dominant-baseline='middle' text-anchor='middle' font-family='Poppins,Arial' font-size='28' fill='white'>${txt}</text>` +
+                `</svg>`;
+        }
 
-/* ==== Dropdown population (hover lists) ==== */
-function uniqueSorted(arr){ return [...new Set(arr)].sort((a,b)=>a.localeCompare(b)); }
+        /* ==== Dropdown population (hover lists) ==== */
+        function uniqueSorted(arr) {
+            return [...new Set(arr)].sort((a, b) => a.localeCompare(b));
+        }
 
-function populateHoverMenus(){
-  const ddThera = document.getElementById('dd-thera');
-  const ddGeneric = document.getElementById('dd-generic');
-  const ddTrade = document.getElementById('dd-trade');
-  if(!ddThera) return;
+        function populateHoverMenus() {
+            const ddThera = document.getElementById('dd-thera');
+            const ddGeneric = document.getElementById('dd-generic');
+            const ddTrade = document.getElementById('dd-trade');
+            if (!ddThera) return;
 
-  const classes = uniqueSorted(DATA.map(d=>d.class));
-  const generics = uniqueSorted(DATA.map(d=>d.generic.replace(/—/g,'-')));
-  const trades = uniqueSorted(DATA.map(d=>d.trade));
+            const classes = uniqueSorted(DATA.map(d => d.class));
+            const generics = uniqueSorted(DATA.map(d => d.generic.replace(/—/g, '-')));
+            const trades = uniqueSorted(DATA.map(d => d.trade));
 
-  ddThera.innerHTML = classes.map(c=>`<a href="therapeutic-class.html#${encodeURIComponent(c)}">${c}</a>`).join('');
-  ddGeneric.innerHTML = generics.map(g=>`<a href="generic-name.html#${encodeURIComponent(g)}">${g}</a>`).join('');
-  ddTrade.innerHTML = trades.map(t=>`<a href="trade-name.html#${encodeURIComponent(t)}">${t}</a>`).join('');
-}
+            ddThera.innerHTML = classes.map(c => `<a href="therapeutic-class.html#${encodeURIComponent(c)}">${c}</a>`).join('');
+            ddGeneric.innerHTML = generics.map(g => `<a href="generic-name.html#${encodeURIComponent(g)}">${g}</a>`).join('');
+            ddTrade.innerHTML = trades.map(t => `<a href="catalogue.html#${encodeURIComponent(t)}">${t}</a>`).join('');
+        }
 
-/* ==== Render accordion by class ==== */
-function renderByClass(filter=''){
-  const wrap = document.getElementById('accordion');
-  const classes = Object.keys(CLASS_COLORS);
-  const match = (t)=> t.toLowerCase().includes(filter.toLowerCase());
+        /* ==== Render accordion by class ==== */
+        function renderByClass(filter = '') {
+            const wrap = document.getElementById('accordion');
+            const classes = Object.keys(CLASS_COLORS);
+            const match = (t) => t.toLowerCase().includes(filter.toLowerCase());
 
-  wrap.innerHTML = '';
+            wrap.innerHTML = '';
 
-  classes.forEach(cls=>{
-    const items = DATA.filter(d=>d.class===cls)
-      .filter(d=> match(d.trade) || match(d.generic) || match(d.strength) );
+            classes.forEach(cls => {
+                        const items = DATA.filter(d => d.class === cls)
+                            .filter(d => match(d.trade) || match(d.generic) || match(d.strength));
 
-    if(items.length===0) return;
+                        if (items.length === 0) return;
 
-    const tagClass = CLASS_COLORS[cls] || 'c-Antibiotics';
-    const id = encodeURIComponent(cls);
+                        const tagClass = CLASS_COLORS[cls] || 'c-Antibiotics';
+                        const id = encodeURIComponent(cls);
 
-    const cards = items
-      .sort((a,b)=>a.trade.localeCompare(b.trade))
-      .map(d=>{
-        const img = svgPlaceholder(d.trade.split(' ')[0], getColorHex(tagClass));
-        return `
+                        const cards = items
+                            .sort((a, b) => a.trade.localeCompare(b.trade))
+                            .map(d => {
+                                    const img = svgPlaceholder(d.trade.split(' ')[0], getColorHex(tagClass));
+                                    return `
         <div class="card">
           <div class="thumb"><img src="${img}" alt="${d.trade}" style="width:100%;height:100%;object-fit:cover;"></div>
           <div class="body">
@@ -377,6 +819,7 @@ document.getElementById('search').addEventListener('input', (e)=>{
 
 populateHoverMenus();
 renderByClass();
-</script>
+    </script>
 </body>
+
 </html>
