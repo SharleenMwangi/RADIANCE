@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- Page-specific polishing that complements your style.css --- */
+    /* --- Page-specific polishing that complements your style.css --- */
         
         .page-header {
             padding: 24px 0;
@@ -27,249 +27,186 @@
             color: #555;
         }
         
-        .toolbar {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            margin: 18px 0 10px;
-            flex-wrap: wrap;
+        <body><!-- INCLUDE: partials/_header.html -->
+    }
+    .acc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px;
+        background: #f7f9fc;
+        cursor: pointer;
+    }
+    .acc-header h3 {
+        margin: 0;
+        font-size: 1.05rem;
+    }
+    .acc-body {
+        padding: 12px 14px 18px;
+        display: none;
+        animation: acc .25s ease;
+        background: #fff;
+    }
+    .acc-item.open .acc-body {
+        display: block;
+    }
+    @keyframes acc {
+        from {
+            opacity: 0;
+            transform: translateY(-4px);
         }
         
-        .search-input {
-            flex: 1;
-            min-width: 240px;
-            padding: 10px 12px;
-            border: 1px solid #e2e2e2;
-            border-radius: 12px;
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
-        
-        .hint {
-            color: #777;
-            font-size: .9rem;
-        }
-        
-        .accordion {
-            border-radius: 14px;
-            overflow: hidden;
-            border: 1px solid #eee;
-        }
-        
-        .acc-item+.acc-item {
-            border-top: 1px solid #eee;
-        }
-        
-        .acc-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 16px;
-            background: #f7f9fc;
-            cursor: pointer;
-        }
-        
-        .acc-header h3 {
-            margin: 0;
-            font-size: 1.05rem;
-        }
-        
-        .acc-body {
-            padding: 12px 14px 18px;
-            display: none;
-            animation: acc .25s ease;
-            background: #fff;
-        }
-        
-        .acc-item.open .acc-body {
-            display: block;
-        }
-        
-        @keyframes acc {
-            from {
-                opacity: 0;
-                transform: translateY(-4px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-            gap: 14px;
-        }
-        
-        .card {
-            border: 1px solid #eee;
-            border-radius: 16px;
-            overflow: hidden;
-            background: #fff;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .card .thumb {
-            width: 100%;
-            aspect-ratio: 4/3;
-            background: #eef2f7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .card .body {
-            padding: 12px;
-        }
-        
-        .name {
-            font-weight: 600;
-            margin: 0 0 6px;
-        }
-        
-        .strength {
-            margin: 0 0 6px;
-            color: #555;
-            font-size: .95rem;
-        }
-        
-        .price {
-            margin: 0;
-            font-size: .92rem;
-            color: #333;
-            line-height: 1.35;
-        }
-        
-        .tag {
-            font-size: .8rem;
-            color: #fff;
-            padding: 3px 8px;
-            border-radius: 999px;
-            display: inline-block;
-        }
-        
-        .KSH {
-            font-weight: 600;
-        }
-        /* Color codes per therapeutic class */
-        
-        .c-Antibiotics {
-            background: #2663eb;
-        }
-        
-        .c-Pain {
-            background: #f97316;
-        }
-        
-        .c-Vitamins {
-            background: #16a34a;
-        }
-        
-        .c-Injections {
-            background: #a855f7;
-        }
-        
-        .c-Ophthalmic {
-            background: #0ea5e9;
-        }
-        
-        .c-Respiratory {
-            background: #059669;
-        }
-        
-        .c-Gastro {
-            background: #dc2626;
-        }
-        
-        .c-Hormonal {
-            background: #db2777;
-        }
-        
-        .c-Diagnostic {
-            background: #64748b;
-        }
-        /* back button consistency */
-        
-        .nav-actions {
-            margin-left: auto;
-        }
-        
-        .btn-back {
-            background: #eee;
-            color: #333;
-            padding: 8px 12px;
-            border-radius: 10px;
-            text-decoration: none;
-        }
-        
-        .btn-back:hover {
-            background: #ddd;
-        }
-        
-        .layout {
-            display: flex;
-            min-height: 100vh;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        .sidebar {
-            width: 250px;
-            background: #f9f9f9;
-            border-right: 1px solid #ddd;
-            padding: 1rem;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        
-        .sidebar h2 {
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-        
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .sidebar li {
-            margin: 0.5rem 0;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-        
-        .sidebar li:hover,
-        .sidebar li.active {
-            background: #007BFF;
-            color: white;
-        }
-        
-        .content {
-            flex: 1;
-            padding: 2rem;
-        }
-        
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1rem;
-        }
-        
-        .card {
-            background: #fff;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
-        }
-        
-        .card:hover {
-            transform: translateY(-3px);
-        }
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 14px;
+    }
+    .card {
+        border: 1px solid #eee;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+    }
+    .card .thumb {
+        width: 100%;
+        aspect-ratio: 4/3;
+        background: #eef2f7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .card .body {
+        padding: 12px;
+    }
+    .name {
+        font-weight: 600;
+        margin: 0 0 6px;
+    }
+    .strength {
+        margin: 0 0 6px;
+        color: #555;
+        font-size: .95rem;
+    }
+    .price {
+        margin: 0;
+        font-size: .92rem;
+        color: #333;
+        line-height: 1.35;
+    }
+    .tag {
+        font-size: .8rem;
+        color: #fff;
+        padding: 3px 8px;
+        border-radius: 999px;
+        display: inline-block;
+    }
+    .KSH {
+        font-weight: 600;
+    }
+    /* Color codes per therapeutic class */
+    .c-Antibiotics {
+        background: #2663eb;
+    }
+    .c-Pain {
+        background: #f97316;
+    }
+    .c-Vitamins {
+        background: #16a34a;
+    }
+    .c-Injections {
+        background: #a855f7;
+    }
+    .c-Ophthalmic {
+        background: #0ea5e9;
+    }
+    .c-Respiratory {
+        background: #059669;
+    }
+    .c-Gastro {
+        background: #dc2626;
+    }
+    .c-Hormonal {
+        background: #db2777;
+    }
+    .c-Diagnostic {
+        background: #64748b;
+    }
+    /* back button consistency */
+    .nav-actions {
+        margin-left: auto;
+    }
+    .btn-back {
+        background: #eee;
+        color: #333;
+        padding: 8px 12px;
+        border-radius: 10px;
+        text-decoration: none;
+    }
+    .btn-back:hover {
+        background: #ddd;
+    }
+    .layout {
+        display: flex;
+        min-height: 100vh;
+        font-family: 'Poppins', sans-serif;
+    }
+    .sidebar {
+        width: 250px;
+        background: #f9f9f9;
+        border-right: 1px solid #ddd;
+        padding: 1rem;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+    }
+    .sidebar h2 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
+    .sidebar li {
+        margin: 0.5rem 0;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 5px;
+        transition: background 0.3s;
+    }
+    .sidebar li:hover,
+    .sidebar li.active {
+        background: #007BFF;
+        color: white;
+    }
+    .content {
+        flex: 1;
+        padding: 2rem;
+    }
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+    .card {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-3px);
+    }
     </style>
 </head>
 
@@ -361,8 +298,8 @@
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script>
         /* ====== MASTER DATA (from your list) ======
-           Fields: trade (brand), generic, strength/pack, tradePrice, retailPrice, class
-        */
+                   Fields: trade (brand), generic, strength/pack, tradePrice, retailPrice, class
+                */
         const DATA = [
             // ----- Antibiotics -----
             {

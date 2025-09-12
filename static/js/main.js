@@ -30,14 +30,11 @@ async function setupPublicAPIExamples() {
     if (partnerCarousel) partnerCarousel.innerHTML += partnerCarousel.innerHTML;
     if (clientCarousel) clientCarousel.innerHTML += clientCarousel.innerHTML;
 
-    const apiKeyMeta = document.querySelector('meta[name="public-api-key"]');
     const apiBaseMeta = document.querySelector('meta[name="public-api-base"]');
-    if (!apiKeyMeta || !apiBaseMeta) return;
-    const apiKey = apiKeyMeta.content;
-    // Use the documented API base (e.g. http://localhost:5000) rather than the local static server.
+    // Use configured API base (injected by server) or fall back to localhost:5000
     // Trim any trailing slash so concatenation below is consistent.
     function normalizeBase(b) { return (b || '').toString().replace(/\/+$/, ''); }
-    const proxyBase = normalizeBase(apiBaseMeta.content);
+    const apiBase = apiBaseMeta ? normalizeBase(apiBaseMeta.content) : 'http://localhost:5000';
 
     // Helper to update DOM elements for common endpoints
     function updateDomForRoute(path, data) {
@@ -82,10 +79,12 @@ async function setupPublicAPIExamples() {
         const doc = await routesRes.json();
         const routes = Array.isArray(doc.routes) ? doc.routes : [];
 
-        // First, call the products route to discover real product IDs instead of using a hardcoded 101
+    // First, call the products route to discover real product IDs instead of using a hardcoded 101
         let discoveredProducts = null;
         const prodRoute = routes.find(rt => rt.path === '/public/products');
-        const commonHeaders = { 'X-API-Key': apiKey, 'Accept': 'application/json' };
+    // Do NOT include API keys in browser requests. The server proxy will attach
+    // the configured API key when making upstream calls.
+    const commonHeaders = { 'Accept': 'application/json' };
 
         // small helper: fetch with retries/backoff
         async function fetchWithRetry(url, options = {}, attempts = 3, baseDelay = 500) {
@@ -101,25 +100,11 @@ async function setupPublicAPIExamples() {
             }
         }
 
-        // Try calling the API base first (proxyBase + path). If it returns 401 or throws (CORS/network),
-        // fall back to the same-origin proxy at /public/...
+        // Always call the configured API base (port 5000). No proxy to the static server is used.
         async function tryApiThenProxy(path, options = {}) {
-            const apiUrl = (proxyBase || '') + (path.startsWith('/') ? path : ('/' + path));
-            const proxyPath = path.startsWith('/') ? '/public' + path : '/public/' + path;
-            // ensure headers exist
+            const apiUrl = (apiBase || '') + (path.startsWith('/') ? path : ('/' + path));
             options.headers = Object.assign({}, options.headers || {});
-
-            try {
-                const res = await fetch(apiUrl, options);
-                if (res.status === 401) {
-                    console.warn(`API base returned 401 for ${apiUrl}; retrying via proxy ${proxyPath}`);
-                    return fetch(proxyPath, options);
-                }
-                return res;
-            } catch (err) {
-                console.warn(`Error calling API base ${apiUrl}:`, err, 'Falling back to proxy', proxyPath);
-                return fetch(proxyPath, options);
-            }
+            return fetch(apiUrl, options);
         }
 
         if (prodRoute) {
@@ -202,7 +187,7 @@ async function setupPublicAPIExamples() {
         console.warn('public_routes.json not available or failed to load, falling back to hard-coded examples');
         // Fallback: previous hard-coded calls (keeps existing behaviour if routes file missing)
         // Products
-    fetch(proxyBase + '/public/products?per_page=5&q=phone&sort=price&direction=asc')
+    fetch(apiBase + '/public/products?per_page=5&q=phone&sort=price&direction=asc')
             .then(res => res.json())
             .then(data => {
                 console.log("Products:", data);
@@ -210,7 +195,7 @@ async function setupPublicAPIExamples() {
             })
             .catch(() => {});
         // Categories
-    fetch(proxyBase + '/public/categories')
+    fetch(apiBase + '/public/categories')
             .then(res => res.json())
             .then(data => {
                 console.log("Categories:", data);
@@ -218,7 +203,7 @@ async function setupPublicAPIExamples() {
             })
             .catch(() => {});
         // Product detail
-    fetch(proxyBase + '/public/products/101')
+    fetch(apiBase + '/public/products/101')
             .then(res => res.json())
             .then(data => {
                 console.log("Product Detail:", data);
@@ -226,7 +211,7 @@ async function setupPublicAPIExamples() {
             })
             .catch(() => {});
         // Prices
-    fetch(proxyBase + '/public/prices?product_id=101')
+    fetch(apiBase + '/public/prices?product_id=101')
             .then(res => res.json())
             .then(data => {
                 console.log("Prices:", data);
@@ -234,7 +219,7 @@ async function setupPublicAPIExamples() {
             })
             .catch(() => {});
         // Price categories
-    fetch(proxyBase + '/public/price-categories')
+    fetch(apiBase + '/public/price-categories')
             .then(res => res.json())
             .then(data => {
                 console.log("Price Categories:", data);
@@ -242,7 +227,7 @@ async function setupPublicAPIExamples() {
             })
             .catch(() => {});
         // Images
-    fetch(proxyBase + '/public/images?per_page=10')
+    fetch(apiBase + '/public/images?per_page=10')
             .then(res => res.json())
             .then(data => {
                 console.log("Images:", data);

@@ -105,7 +105,7 @@ This project is for internal use at Radiance Pharmaceuticals.
   "authentication": {
     "type": "api_key",
     "header": "X-API-Key",
-    "demo_key": "public-demo-key-12345",
+  "demo_key": "",
     "error_example": {
       "status": 401,
       "body": { "error": "Invalid or missing API key" }

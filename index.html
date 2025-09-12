@@ -9,12 +9,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Public API meta tags -->
-    <meta name="public-api-key" content="public-demo-key-12345">
+    <!-- public API key removed for security; server-side proxy will attach the key to upstream requests -->
     <meta name="public-api-base" content="https://api.regisamtechnologies.co.ke">
 </head>
 
 <body>
 
+    <!-- header imported from partials/_header.html -->
     <header>
         <div class="container">
             <div class="branding">
@@ -38,139 +39,9 @@
             <a href="#about">About Us</a>
             <a href="#vision-mission">Vision & Mission</a>
             <div class="dropdown">
-                <a href="#products" class="dropbtn">Our Products</a>
-                <div class="dropdown-content">
-
-                    <!-- Therapeutic Class -->
-                    <div class="dropdown-sub">
-                        <a href="therapeutic-class.html">Therapeutic Class</a>
-                        <div class="dropdown-sub-content">
-                            <a href="#">Antibiotics</a>
-                            <a href="#">Pain Relief & Anti-inflammatory</a>
-                            <a href="#">Vitamins & Supplements</a>
-                            <a href="#">Injections</a>
-                            <a href="#">Eye/Ear & Nasal Drops</a>
-                            <a href="#">Respiratory & Allergy</a>
-                            <a href="#">Gastrointestinal</a>
-                            <a href="#">Hormonal & Reproductive Health</a>
-                            <a href="#">Diagnostic Kits</a>
-                        </div>
-                    </div>
-
-                    <!-- Generic Name -->
-                    <div class="dropdown-sub">
-                        <a href="generic-name.html">Generic Name</a>
-                        <div class="dropdown-sub-content">
-                            <a href="#">Aceclofenac</a>
-                            <a href="#">Amikacin</a>
-                            <a href="#">Amoxicillin</a>
-                            <a href="#">Amoxicillin + Clavulanic Acid</a>
-                            <a href="#">Ambroxol</a>
-                            <a href="#">Acyclovir</a>
-                            <a href="#">Atorvastatin</a>
-                            <a href="#">Bromhexine</a>
-                            <a href="#">Celecoxib</a>
-                            <a href="#">Chlorhexidine</a>
-                            <a href="#">Cefadroxil</a>
-                            <a href="#">Cefixime</a>
-                            <a href="#">Cefpodoxime</a>
-                            <a href="#">Cefuroxime</a>
-                            <a href="#">Clindamycin</a>
-                            <a href="#">Clomiphene citrate</a>
-                            <a href="#">Desloratadine</a>
-                            <a href="#">Finerenone</a>
-                            <a href="#">Fentanyl</a>
-                            <a href="#">Flucloxacillin</a>
-                            <a href="#">Hydroxychloroquine</a>
-                            <a href="#">Iron & Vitamins</a>
-                            <a href="#">Ketotifen</a>
-                            <a href="#">Levocetirizine</a>
-                            <a href="#">Lactulose</a>
-                            <a href="#">Mebeverine</a>
-                            <a href="#">Misoprostol</a>
-                            <a href="#">Mometasone</a>
-                            <a href="#">Ondansetron</a>
-                            <a href="#">Olopatadine</a>
-                            <a href="#">Omeprazole</a>
-                            <a href="#">Pregabalin</a>
-                            <a href="#">Povidone Iodine</a>
-                            <a href="#">Salbutamol</a>
-                            <a href="#">Sertraline</a>
-                            <a href="#">Sitagliptin</a>
-                            <a href="#">Tranexamic acid</a>
-                            <a href="#">Vitamin B1+B6+B12</a>
-                            <a href="#">Vitamin C</a>
-                            <a href="#">Vitamin D3</a>
-                            <a href="#">Vitamin E</a>
-                            <a href="#">Zinc</a>
-                        </div>
-                    </div>
-
-                    <!-- Trade Name -->
-                    <div class="dropdown-sub">
-                        <a href="catalogue.html">Trade Name</a>
-                        <div class="dropdown-sub-content">
-                            <a href="#">ADORA 100ML</a>
-                            <a href="#">ADORA 500 Capsules</a>
-                            <a href="#">ADORA 60ML</a>
-                            <a href="#">ALNEED GOLD Capsules</a>
-                            <a href="#">AMBOLYT 100ML</a>
-                            <a href="#">AMUCORT Nasal Spray</a>
-                            <a href="#">AURO D3 Nano Shots</a>
-                            <a href="#">CALIDIN 150 Capsules</a>
-                            <a href="#">CALIDIN 300 Capsules</a>
-                            <a href="#">CEEGRAM Effervescent</a>
-                            <a href="#">CELENTA 200 Capsules</a>
-                            <a href="#">CISPENAM 500 IV Injection</a>
-                            <a href="#">COMPIRON 30ML</a>
-                            <a href="#">CYTOMIS 30'S</a>
-                            <a href="#">DESLONE Syrup 50ML</a>
-                            <a href="#">EMIXEF 50ML Suspension</a>
-                            <a href="#">ESONIX 40 Injection</a>
-                            <a href="#">INTRAX 500 Capsules</a>
-                            <a href="#">INTRAX 500 Injection</a>
-                            <a href="#">INOLAC Solution 100ML</a>
-                            <a href="#">INOVIT E 400 Capsules</a>
-                            <a href="#">KANOPAS 10 Tablets</a>
-                            <a href="#">KANOPAS 20 Tablets</a>
-                            <a href="#">KETOMAR Syrup 100ML</a>
-                            <a href="#">KILBAC Suspension 70ML</a>
-                            <a href="#">LEFOAM Drops 30ML</a>
-                            <a href="#">MOMESON Nasal Spray</a>
-                            <a href="#">MUCOLYT Syrup 100ML</a>
-                            <a href="#">NEOCILOR Syrup 60ML</a>
-                            <a href="#">NEOCILOR Tablets 100'S</a>
-                            <a href="#">NOTERON 5 Tablets</a>
-                            <a href="#">OLANAP 10 Tablets</a>
-                            <a href="#">OSTEO D Oral Drops</a>
-                            <a href="#">OVUCLON Tablets 30'S</a>
-                            <a href="#">PREGABEN 75 Capsules</a>
-                            <a href="#">PREGABEN 150 Capsules</a>
-                            <a href="#">RECONIL 200 Tablets</a>
-                            <a href="#">REPOSE Tablets 50'S</a>
-                            <a href="#">ROBAPAM 3 Tablets</a>
-                            <a href="#">SEASONIX Syrup 50ML</a>
-                            <a href="#">SEASONIX Tablets 100'S</a>
-                            <a href="#">SITAGIL 50 Tablets</a>
-                            <a href="#">SITAGIL 100 Tablets</a>
-                            <a href="#">SITAGIL M ER Tablets</a>
-                            <a href="#">TIGINOR 20 Tablets</a>
-                            <a href="#">VALEX 200 CR Tablets</a>
-                            <a href="#">VALEX 500 CR Tablets</a>
-                            <a href="#">VALEX Syrup 100ML</a>
-                            <a href="#">XIMEPROX 50 Suspension</a>
-                            <a href="#">XIMEPROX 100 Suspension</a>
-                            <a href="#">XIMEPROX DS Suspension 50ML</a>
-                            <a href="#">TRAXON 1G Injection</a>
-                            <a href="#">TUNACLAV 228 DT 10'S</a>
-                            <a href="#">TUNACLAV 312 DT 10'S</a>
-                            <a href="#">TUNACLAV 457 DT 10'S</a>
-                            <a href="#">TUNAMOX 250 DT 20'S</a>
-                            <a href="#">TRINSCREEN HIV Test Kits 100'S</a>
-                            <!-- Add all remaining trade names here -->
-                        </div>
-                    </div>
-
+                <a class="dropbtn">Our Products</a>
+                <div class="dropdown-content" id="dd-categories">
+                    <!-- categories links will be populated here by JS -->
                 </div>
             </div>
 
@@ -410,7 +281,7 @@
 
 
 
-    <script src="static/js/main.js"></script>
+    <script src="static/js/catalogue.js"></script>
 </body>
 
 </html>

@@ -10,7 +10,7 @@
             "auth": "public_api_key (X-API-Key header, optional if not configured)",
             "summary": "Public, paginated product listing. Returns simplified payload including 'prices' and 'image_urls'.",
             "request": {
-                "headers": { "X-API-Key": "public-demo-key-12345" },
+                "headers": { "X-API-Key": "<REDACTED_OR_CONFIGURED_ON_SERVER>" },
                 "query": { "per_page": 5, "q": "phone", "sort": "price", "direction": "asc" }
             },
             "responses": {
@@ -35,7 +35,7 @@
             "auth": "public_api_key",
             "summary": "Public product detail with images and prices.",
             "request": {
-                "headers": { "X-API-Key": "public-demo-key-12345" }
+                "headers": { "X-API-Key": "<REDACTED_OR_CONFIGURED_ON_SERVER>" }
             },
             "responses": {
                 "200": { "description": "OK", "body": { "id": 101, "name": "Budget Phone", "description": "Entry-level device", "price": 99.99, "prices": [{ "price_type": "trade", "value": 80.0, "currency": "USD" }, { "price_type": "retail", "value": 99.99, "currency": "USD" }], "category_id": 3, "images": [{ "id": 5001, "name": "Front", "url": "https://.../front.jpg", "color": "black" }] } }
@@ -50,7 +50,7 @@
             "auth": "public_api_key",
             "summary": "Public read-only price rows; supports query params: product_id, price_type.",
             "request": {
-                "headers": { "X-API-Key": "public-demo-key-12345" },
+                "headers": { "X-API-Key": "<REDACTED_OR_CONFIGURED_ON_SERVER>" },
                 "query": { "product_id": 101 }
             },
             "responses": {
@@ -66,7 +66,7 @@
             "auth": "public_api_key",
             "summary": "Public price category listing.",
             "request": {
-                "headers": { "X-API-Key": "public-demo-key-12345" }
+                "headers": { "X-API-Key": "<REDACTED_OR_CONFIGURED_ON_SERVER>" }
             },
             "responses": {
                 "200": { "description": "OK", "body": [{ "id": 10, "name": "Default", "tradePrice": 200.0, "retailPrice": 266.0 }] }
