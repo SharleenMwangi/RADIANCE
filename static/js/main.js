@@ -274,25 +274,48 @@ setInterval(() => {
 }, 3000);
 
 // Smooth header scrolled toggle: add/remove `scrolled` class when user scrolls past threshold
+// Improved header scroll logic: avoid toggling when user scrolls only a few pixels near top
 (function addHeaderScrollListener() {
-    // safe guard: run after DOM is ready
-    function install() {
+    let lastScrolled = null;
+    let ticking = false;
+    const MIN_THRESHOLD = 70; // minimum pixels before header is considered "scrolled"
+
+    function getScrollY() {
+        return window.scrollY || document.documentElement.scrollTop || 0;
+    }
+
+    function update() {
         const header = document.querySelector('header');
         if (!header) return;
-        const onScroll = () => {
-            try {
-                if (window.scrollY > 50) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
-            } catch (e) {
-                // defensive: ignore errors
-            }
-        };
-        // initial state
-        onScroll();
+
+        const headerHeight = header.offsetHeight || 0;
+        // use a threshold that scales with header height but never below MIN_THRESHOLD
+        const threshold = Math.max(MIN_THRESHOLD, Math.round(headerHeight * 0.75));
+
+        const scrollY = getScrollY();
+        const shouldBeScrolled = scrollY > threshold;
+
+        if (lastScrolled !== shouldBeScrolled) {
+            header.classList.toggle('scrolled', shouldBeScrolled);
+            lastScrolled = shouldBeScrolled;
+        }
+    }
+
+    function onScroll() {
+        if (!ticking) {
+            ticking = true;
+            window.requestAnimationFrame(() => {
+                update();
+                ticking = false;
+            });
+        }
+    }
+
+    function install() {
+        lastScrolled = null;
+        update(); // set initial state
         window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', update, { passive: true });
     }
 
     if (document.readyState === 'loading') {
