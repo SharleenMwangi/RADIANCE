@@ -1,0 +1,370 @@
+[
+  {
+    "trade": "ADORA 500 CAPSULES",
+    "generic": "Cefadroxil",
+    "strength": "500mg • 20's",
+    "tradePrice": 450,
+    "retailPrice": 599,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "ADORA 60ML",
+    "generic": "Cefadroxil",
+    "strength": "125mg/5ml • 60ml",
+    "tradePrice": 250,
+    "retailPrice": 333,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "ADORA 100 ML",
+    "generic": "Cefadroxil",
+    "strength": "125mg/5ml • 100ml",
+    "tradePrice": 300,
+    "retailPrice": 399,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "EMIXEF 50ML SUSPENSION",
+    "generic": "Cefixime",
+    "strength": "100mg/5ml • 50ml",
+    "tradePrice": 450,
+    "retailPrice": 599,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "KILBAC SUSPENSION",
+    "generic": "Cefuroxime",
+    "strength": "125mg/5ml • 70ml",
+    "tradePrice": 500,
+    "retailPrice": 665,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "XIMEPROX 50 SUSPENSION",
+    "generic": "Cefpodoxime proxetil",
+    "strength": "40mg/5ml • 50ml",
+    "tradePrice": 500,
+    "retailPrice": 665,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "XIMEPROX 100 SUSPENSION",
+    "generic": "Cefpodoxime proxetil",
+    "strength": "40mg/5ml • 100ml",
+    "tradePrice": 700,
+    "retailPrice": 931,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "XIMEPROX DS SUSPENSION",
+    "generic": "Cefpodoxime",
+    "strength": "80mg/5ml • 50ml",
+    "tradePrice": 700,
+    "retailPrice": 931,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "FLUX 125 SUSPENSION",
+    "generic": "Flucloxacillin",
+    "strength": "125mg/5ml • 100ml",
+    "tradePrice": 220,
+    "retailPrice": 293,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "FLUX DS SUSPENSION",
+    "generic": "Flucloxacillin",
+    "strength": "250mg/5ml • 100ml",
+    "tradePrice": 360,
+    "retailPrice": 479,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "FLUX 250 CAPSULES",
+    "generic": "Flucloxacillin",
+    "strength": "250mg • 28's",
+    "tradePrice": 346,
+    "retailPrice": 460,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "FLUX 500 CAPSULES",
+    "generic": "Flucloxacillin",
+    "strength": "500mg • 28's",
+    "tradePrice": 628,
+    "retailPrice": 835,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "FLUX 500 INJECTION",
+    "generic": "Flucloxacillin",
+    "strength": "500mg PFI • 50's",
+    "tradePrice": 3500,
+    "retailPrice": null,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "FLOVANIS TABLETS",
+    "generic": "Levofloxacin",
+    "strength": "500mg • 10's",
+    "tradePrice": 560,
+    "retailPrice": 745,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "TRAXON 1G INJECTION",
+    "generic": "Ceftriaxone",
+    "strength": "1g PFI + diluent • 1's",
+    "tradePrice": 300,
+    "retailPrice": 399,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "SEFUR 125 SUSPENSION",
+    "generic": "Cefuroxime",
+    "strength": "125mg/5ml • 70ml",
+    "tradePrice": 520,
+    "retailPrice": 695,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "SEFUR DS SUSPENSION",
+    "generic": "Cefuroxime",
+    "strength": "250mg/5ml • 50ml",
+    "tradePrice": 690,
+    "retailPrice": 918,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "SEFUR 750 INJECTION",
+    "generic": "Cefuroxime",
+    "strength": "750mg PFI + diluent • 1's",
+    "tradePrice": 200,
+    "retailPrice": 266,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "AZICIN 500 TABLETS",
+    "generic": "Azithromycin",
+    "strength": "500mg • 3's",
+    "tradePrice": 300,
+    "retailPrice": 399,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "AZICIN SUSPENSION",
+    "generic": "Azithromycin",
+    "strength": "200mg/5ml • 20ml",
+    "tradePrice": 270,
+    "retailPrice": 351,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "TUNACLAV 228 DT",
+    "generic": "Amoxicillin + Clavulanic acid",
+    "strength": "200/28.5mg • 10's",
+    "tradePrice": 300,
+    "retailPrice": 399,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "TUNACLAV 312 DT",
+    "generic": "Amoxicillin + Clavulanic acid",
+    "strength": "250/62.5mg • 10's",
+    "tradePrice": 360,
+    "retailPrice": 479,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "TUNACLAV 457 DT",
+    "generic": "Amoxicillin + Clavulanic acid",
+    "strength": "400/57mg • 10's",
+    "tradePrice": 400,
+    "retailPrice": 532,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "TUNAMOX 250 DT",
+    "generic": "Amoxicillin",
+    "strength": "250mg • 20's",
+    "tradePrice": 200,
+    "retailPrice": 266,
+    "class": "Antibiotics"
+  },
+  {
+    "trade": "CELENTA 200 CAPSULES",
+    "generic": "Celecoxib",
+    "strength": "200mg • 10's",
+    "tradePrice": 250,
+    "retailPrice": 333,
+    "class": "Pain Relief & Anti-inflammatory"
+  },
+  {
+    "trade": "MOVEX TABLETS",
+    "generic": "Aceclofenac",
+    "strength": "100mg • 50's",
+    "tradePrice": 450,
+    "retailPrice": 599,
+    "class": "Pain Relief & Anti-inflammatory"
+  },
+  {
+    "trade": "PREGABEN 75 CAPSULES",
+    "generic": "Pregabalin",
+    "strength": "75mg • 30's",
+    "tradePrice": 600,
+    "retailPrice": 798,
+    "class": "Pain Relief & Anti-inflammatory"
+  },
+  {
+    "trade": "PREGABEN 150 CAPSULES",
+    "generic": "Pregabalin",
+    "strength": "150mg • 20's",
+    "tradePrice": 750,
+    "retailPrice": 998,
+    "class": "Pain Relief & Anti-inflammatory"
+  },
+  {
+    "trade": "REPOSE TABLETS",
+    "generic": "Sertraline",
+    "strength": "50mg • 50's",
+    "tradePrice": 800,
+    "retailPrice": 1064,
+    "class": "Pain Relief & Anti-inflammatory"
+  },
+  {
+    "trade": "ROBAPAM 3 TABLETS",
+    "generic": "Bromazepam",
+    "strength": "3mg • 30's",
+    "tradePrice": 600,
+    "retailPrice": 798,
+    "class": "Pain Relief & Anti-inflammatory"
+  },
+  {
+    "trade": "OLANAP 10 TABLETS",
+    "generic": "Olanzapine",
+    "strength": "10mg • 50's",
+    "tradePrice": 600,
+    "retailPrice": 798,
+    "class": "Pain Relief & Anti-inflammatory"
+  },
+  {
+    "trade": "TIGINOR 20",
+    "generic": "Atorvastatin",
+    "strength": "20mg • 20's",
+    "tradePrice": 320,
+    "retailPrice": 426,
+    "class": "Pain Relief & Anti-inflammatory"
+  },
+  {
+    "trade": "VALEX SYRUP",
+    "generic": "Sodium Valproate",
+    "strength": "200mg/5ml • 100ml",
+    "tradePrice": 350,
+    "retailPrice": 466,
+    "class": "Pain Relief & Anti-inflammatory"
+  },
+  {
+    "trade": "VALEX 200 CR TABLETS",
+    "generic": "Sodium Valproate + Valproic acid",
+    "strength": "200mg chrono • 50's",
+    "tradePrice": 600,
+    "retailPrice": 798,
+    "class": "Pain Relief & Anti-inflammatory"
+  },
+  {
+    "trade": "VALEX 500 CR TABLETS",
+    "generic": "Sodium Valproate + Valproic acid",
+    "strength": "500mg chrono • 28's",
+    "tradePrice": 800,
+    "retailPrice": 1064,
+    "class": "Pain Relief & Anti-inflammatory"
+  },
+  {
+    "trade": "ALNEED GOLD CAPSULE",
+    "generic": "Iron polymaltose + Folic acid + Zinc + Vit B-complex",
+    "strength": "30's",
+    "tradePrice": 500,
+    "retailPrice": 665,
+    "class": "Vitamins & Supplements"
+  },
+  {
+    "trade": "CAVIC C PLUS EFFERVESCENT TABLETS",
+    "generic": "Calcium salts + Vit C & D",
+    "strength": "10's",
+    "tradePrice": 400,
+    "retailPrice": 532,
+    "class": "Vitamins & Supplements"
+  },
+  {
+    "trade": "CEEGRAM EFFERVESCENT TABLETS",
+    "generic": "Ascorbic Acid (Vitamin C)",
+    "strength": "1000mg • 10's",
+    "tradePrice": 230,
+    "retailPrice": 306,
+    "class": "Vitamins & Supplements"
+  },
+  {
+    "trade": "INOVIT E 400 CAPSULES",
+    "generic": "Vitamin E",
+    "strength": "400 IU • 30's",
+    "tradePrice": 600,
+    "retailPrice": 798,
+    "class": "Vitamins & Supplements"
+  },
+  {
+    "trade": "OSTEO D ORAL DROPS",
+    "generic": "Vitamin D (paediatric)",
+    "strength": "30ml",
+    "tradePrice": 400,
+    "retailPrice": 532,
+    "class": "Vitamins & Supplements"
+  },
+  {
+    "trade": "VASCO SYRUP",
+    "generic": "Vitamin C",
+    "strength": "100mg/5ml • 100ml",
+    "tradePrice": 140,
+    "retailPrice": 186,
+    "class": "Vitamins & Supplements"
+  },
+  {
+    "trade": "AURO D3 SOLUTION",
+    "generic": "Vitamin D3",
+    "strength": "60,000 IU • 4x5ml",
+    "tradePrice": 300,
+    "retailPrice": 399,
+    "class": "Vitamins & Supplements"
+  },
+  {
+    "trade": "IMMUPRO SYRUP",
+    "generic": "Zinc Gluconate",
+    "strength": "20mg/5ml • 100ml",
+    "tradePrice": 200,
+    "retailPrice": 266,
+    "class": "Vitamins & Supplements"
+  },
+  {
+    "trade": "COLITROL",
+    "generic": "Calcitriol",
+    "strength": "0.25mcg • 30's",
+    "tradePrice": 700,
+    "retailPrice": 931,
+    "class": "Vitamins & Supplements"
+  },
+  {
+    "trade": "COMPIRON",
+    "generic": "Iron polymaltose",
+    "strength": "200mg eq to 50mg iron/ml • 30ml",
+    "tradePrice": 160,
+    "retailPrice": 213,
+    "class": "Vitamins & Supplements"
+  },
+  {
+    "trade": "VITABION INJECTION",
+    "generic": "Vitamin B1+B6+B12",
+    "strength": "Injection • 5's",
+    "tradePrice": 420,
+    "retailPrice": 559,
+    "class": "Vitamins & Supplements"
+  }
+]

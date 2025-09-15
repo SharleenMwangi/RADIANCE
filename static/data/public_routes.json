@@ -1,0 +1,85 @@
+{
+    "generated_at": "2025-09-12T00:00:00Z",
+    "notes": "Contains only public API endpoints extracted from API_DOCUMENTATION.json.",
+    "routes": [{
+            "blueprint": "public",
+            "registered_prefix": "/public",
+            "path": "/public/products",
+            "methods": ["GET"],
+            "function": "public_products",
+            "auth": "public_api_key (X-API-Key header, optional if not configured)",
+            "summary": "Public, paginated product listing. Returns simplified payload including 'prices' and 'image_urls'.",
+            "request": {
+                "headers": { "X-API-Key": "<REDACTED_OR_CONFIGURED_ON_SERVER>" },
+                "query": { "per_page": 5, "q": "phone", "sort": "price", "direction": "asc" }
+            },
+            "responses": {
+                "200": { "description": "OK", "body": { "page": 1, "per_page": 5, "total": 42, "pages": 9, "products": [{ "id": 101, "name": "Budget Phone", "description": "Entry-level device", "price": 99.99, "prices": [{ "price_type": "trade", "value": 80.0, "currency": "USD" }, { "price_type": "retail", "value": 99.99, "currency": "USD" }], "category_id": 3, "image_urls": ["https://res.cloudinary.com/demo/image/upload/v.../budget_phone.jpg"] }] } }
+            }
+        },
+        {
+            "blueprint": "public",
+            "registered_prefix": "/public",
+            "path": "/public/categories",
+            "methods": ["GET"],
+            "function": "public_categories",
+            "auth": "public_api_key",
+            "summary": "Public category listing."
+        },
+        {
+            "blueprint": "public",
+            "registered_prefix": "/public",
+            "path": "/public/products/<int:product_id>",
+            "methods": ["GET"],
+            "function": "public_product_detail",
+            "auth": "public_api_key",
+            "summary": "Public product detail with images and prices.",
+            "request": {
+                "headers": { "X-API-Key": "<REDACTED_OR_CONFIGURED_ON_SERVER>" }
+            },
+            "responses": {
+                "200": { "description": "OK", "body": { "id": 101, "name": "Budget Phone", "description": "Entry-level device", "price": 99.99, "prices": [{ "price_type": "trade", "value": 80.0, "currency": "USD" }, { "price_type": "retail", "value": 99.99, "currency": "USD" }], "category_id": 3, "images": [{ "id": 5001, "name": "Front", "url": "https://.../front.jpg", "color": "black" }] } }
+            }
+        },
+        {
+            "blueprint": "public",
+            "registered_prefix": "/public",
+            "path": "/public/prices",
+            "methods": ["GET"],
+            "function": "public_prices",
+            "auth": "public_api_key",
+            "summary": "Public read-only price rows; supports query params: product_id, price_type.",
+            "request": {
+                "headers": { "X-API-Key": "<REDACTED_OR_CONFIGURED_ON_SERVER>" },
+                "query": { "product_id": 101 }
+            },
+            "responses": {
+                "200": { "description": "OK", "body": [{ "id": 9001, "product_id": 101, "price_type": "trade", "value": 200.0, "currency": "USD", "min_qty": null }, { "id": 9002, "product_id": 101, "price_type": "retail", "value": 266.0, "currency": "USD", "min_qty": null }] }
+            }
+        },
+        {
+            "blueprint": "public",
+            "registered_prefix": "/public",
+            "path": "/public/price-categories",
+            "methods": ["GET"],
+            "function": "public_price_categories",
+            "auth": "public_api_key",
+            "summary": "Public price category listing.",
+            "request": {
+                "headers": { "X-API-Key": "<REDACTED_OR_CONFIGURED_ON_SERVER>" }
+            },
+            "responses": {
+                "200": { "description": "OK", "body": [{ "id": 10, "name": "Default", "tradePrice": 200.0, "retailPrice": 266.0 }] }
+            }
+        },
+        {
+            "blueprint": "public",
+            "registered_prefix": "/public",
+            "path": "/public/images",
+            "methods": ["GET"],
+            "function": "public_images",
+            "auth": "public_api_key",
+            "summary": "Public image listing (paginated)."
+        }
+    ]
+}
