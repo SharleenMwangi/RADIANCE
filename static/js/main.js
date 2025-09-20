@@ -40,19 +40,19 @@ async function setupPublicAPIExamples() {
     function updateDomForRoute(path, data) {
         if (path === '/public/products') {
             const el = document.getElementById('productsList');
-            if (el && data ?.products) {
+            if (el && data?.products) {
                 el.innerHTML = '<h3>Products</h3><ul>' + data.products.map(p => `<li>${p.name} (${p.price ?? ''})</li>`).join('') + '</ul>';
             }
         } else if (path === '/public/categories') {
             const el = document.getElementById('categoryList');
             // Support APIs that return either an array or an object { categories: [...] }
-            const categories = Array.isArray(data) ? data : (data ?.categories || []);
+            const categories = Array.isArray(data) ? data : (data?.categories || []);
             if (el && categories && categories.length) {
                 el.innerHTML = '<h3>Product Categories</h3><ul>' + categories.map(c => `<li>${c.name}</li>`).join('') + '</ul>';
             }
         } else if (path.startsWith('/public/products/')) {
             const el = document.getElementById('productDetail');
-            if (el && data ?.name) el.innerHTML = `<h3>${data.name}</h3><p>${data.description || ''}</p>`;
+            if (el && data?.name) el.innerHTML = `<h3>${data.name}</h3><p>${data.description || ''}</p>`;
         } else if (path === '/public/prices') {
             const el = document.getElementById('pricesList');
             if (el && Array.isArray(data)) {
@@ -66,7 +66,7 @@ async function setupPublicAPIExamples() {
         } else if (path === '/public/images') {
             const el = document.getElementById('imagesList');
             // API may return an array directly or { images: [...] }
-            const images = Array.isArray(data) ? data : (data ?.images || []);
+            const images = Array.isArray(data) ? data : (data?.images || []);
             if (el && images && images.length) {
                 el.innerHTML = '<h3>Images</h3><ul>' + images.map(img => `<li>${img.name}: <img src="${img.url}" alt="${img.name}" style="height:40px"></li>`).join('') + '</ul>';
             }
@@ -74,17 +74,17 @@ async function setupPublicAPIExamples() {
     }
 
     try {
-    const routesRes = await fetch('/static/data/public_routes.json');
+        const routesRes = await fetch('/static/data/public_routes.json');
         if (!routesRes.ok) throw new Error('No routes file');
         const doc = await routesRes.json();
         const routes = Array.isArray(doc.routes) ? doc.routes : [];
 
-    // First, call the products route to discover real product IDs instead of using a hardcoded 101
+        // First, call the products route to discover real product IDs instead of using a hardcoded 101
         let discoveredProducts = null;
         const prodRoute = routes.find(rt => rt.path === '/public/products');
-    // Do NOT include API keys in browser requests. The server proxy will attach
-    // the configured API key when making upstream calls.
-    const commonHeaders = { 'Accept': 'application/json' };
+        // Do NOT include API keys in browser requests. The server proxy will attach
+        // the configured API key when making upstream calls.
+        const commonHeaders = { 'Accept': 'application/json' };
 
         // small helper: fetch with retries/backoff
         async function fetchWithRetry(url, options = {}, attempts = 3, baseDelay = 500) {
@@ -100,26 +100,41 @@ async function setupPublicAPIExamples() {
             }
         }
 
-        // Always call the configured API base (port 5000). No proxy to the static server is used.
-        async function tryApiThenProxy(path, options = {}) {
-            const apiUrl = (apiBase || '') + (path.startsWith('/') ? path : ('/' + path));
+        // Proxy-only helper: always call the server's /proxy route so the server can inject keys/tenant.
+        async function tryProxy(path, options = {}) {
+            const url = '/proxy' + (path.startsWith('/') ? path : ('/' + path));
+            options = Object.assign({}, options || {});
             options.headers = Object.assign({}, options.headers || {});
-            return fetch(apiUrl, options);
+            // Default credentials: same-origin
+            if (typeof options.credentials === 'undefined') options.credentials = 'same-origin';
+            // Read injected meta values (injected by server) and include them so upstream gets tenant info
+            const tenantMeta = document.querySelector('meta[name="public-tenant"]');
+            const publicKeyMeta = document.querySelector('meta[name="public-api-key"]');
+            if (tenantMeta && tenantMeta.content && !options.headers['X-Tenant']) {
+                options.headers['X-Tenant'] = tenantMeta.content;
+            }
+            if (publicKeyMeta && publicKeyMeta.content && !options.headers['X-API-Key']) {
+                // Only include if server explicitly injected it
+                options.headers['X-API-Key'] = publicKeyMeta.content;
+            }
+            // Allow callers to set headers; server may still inject server-side key if needed.
+            return fetch(url, options);
         }
 
         if (prodRoute) {
-            try {
-                // Try API base first, then fall back to proxy if auth/CORS/network fails
-                const qsPart = (prodRoute.request && prodRoute.request.query) ? ('?' + new URLSearchParams(prodRoute.request.query).toString()) : '';
-                const pRes = await tryApiThenProxy('/public/products' + qsPart, { headers: commonHeaders });
-                if (pRes && pRes.ok) {
-                    discoveredProducts = await pRes.json();
-                    console.log('Discovered products:', discoveredProducts);
-                    updateDomForRoute('/public/products', discoveredProducts);
-                }
-            } catch (e) {
-                console.warn('Failed to fetch products for discovery', e);
-            } finally {
+                try {
+                    const qsPart = (prodRoute.request && prodRoute.request.query) ? ('?' + new URLSearchParams(prodRoute.request.query).toString()) : '';
+                    const pRes = await tryProxy('/public/products' + qsPart, { headers: commonHeaders });
+                    if (pRes && pRes.ok) {
+                        discoveredProducts = await pRes.json();
+                        console.log('✅ Discovered products:', discoveredProducts);
+                        updateDomForRoute('/public/products', discoveredProducts);
+                    } else {
+                        console.warn(`❌ /public/products -> ${pRes ? pRes.status : 'no-res'}`);
+                    }
+                } catch (e) {
+                    console.warn('❌ Failed to fetch products for discovery', e);
+                } finally {
                 // Resolve global promise (avoid leaving awaiting pages hanging)
                 if (window.__resolvePublicProducts) {
                     try { window.__resolvePublicProducts(discoveredProducts); } catch (e) { /* noop */ }
@@ -144,21 +159,16 @@ async function setupPublicAPIExamples() {
                     const id = ids[i];
                     let samplePath = r.path.replace(/<int:product_id>/g, String(id));
                     const urlPath = samplePath.startsWith('/') ? samplePath : ('/' + samplePath);
-                    // attach any other query params except product_id
-                    if (r.request && r.request.query) {
-                        const q = Object.assign({}, r.request.query);
-                        delete q.product_id;
-                        const qs = new URLSearchParams(q).toString();
-                        if (qs) url += (url.includes('?') ? '&' : '?') + qs;
-                    }
+                    // build headers (include any documented headers)
                     const headers = Object.assign({}, commonHeaders, r.request?.headers || {});
                     try {
-                        const res = await tryApiThenProxy(urlPath + (r.request && r.request.query ? ('?' + new URLSearchParams(Object.assign({}, r.request.query, { product_id: undefined })).toString()) : ''), { headers });
+                        const fullPath = urlPath + (r.request && r.request.query ? ('?' + new URLSearchParams(Object.assign({}, r.request.query, { product_id: undefined })).toString()) : '');
+                        const res = await tryProxy(fullPath, { headers });
                         const data = await (res && res.ok ? res.json().catch(() => null) : Promise.resolve(null));
-                        console.log(`Route ${r.path} -> ${res ? res.status : 'no-res'} (id=${id})`, data);
+                        console.log(`Route ${r.path} -> ${res ? res.status : 'no-res'} (id=${id})`, res && res.ok ? '✅' : '❌', data);
                         updateDomForRoute(r.path.replace(/<int:product_id>/g, `/${id}`), data);
                     } catch (fetchErr) {
-                        console.warn(`Error fetching ${url}:`, fetchErr);
+                        console.warn(`❌ Error fetching ${fullPath}:`, fetchErr);
                     }
                 }
             } else {
@@ -169,71 +179,64 @@ async function setupPublicAPIExamples() {
                     // remove product_id if present in query (we don't want to hardcode 101)
                     const q = Object.assign({}, r.request.query);
                     delete q.product_id;
-                    const qs = new URLSearchParams(q).toString();
-                    if (qs) url += (url.includes('?') ? '&' : '?') + qs;
+                    // we don't need to mutate a `url` variable here; the call below will build the query string
                 }
-                const headers = Object.assign({}, commonHeaders, r.request?.headers || {});
+                const headers = Object.assign({}, commonHeaders, r.request ?.headers || {});
                 try {
-                    const res = await tryApiThenProxy(urlPath + (r.request && r.request.query ? ('?' + new URLSearchParams(r.request.query).toString()) : ''), { headers });
+                    const fullPath = urlPath + (r.request && r.request.query ? ('?' + new URLSearchParams(r.request.query).toString()) : '');
+                    const res = await tryProxy(fullPath, { headers });
                     const data = await (res && res.ok ? res.json().catch(() => null) : Promise.resolve(null));
-                    console.log(`Route ${r.path} -> ${res ? res.status : 'no-res'}`, data);
+                    console.log(`Route ${r.path} -> ${res ? res.status : 'no-res'}`, res && res.ok ? '✅' : '❌', data);
                     updateDomForRoute(r.path, data);
                 } catch (fetchErr) {
-                    console.warn(`Error fetching ${url}:`, fetchErr);
+                    console.warn(`❌ Error fetching ${urlPath}:`, fetchErr);
                 }
             }
         }
     } catch (err) {
         console.warn('public_routes.json not available or failed to load, falling back to hard-coded examples');
-        // Fallback: previous hard-coded calls (keeps existing behaviour if routes file missing)
-        // Products
-    fetch(apiBase + '/public/products?per_page=5&q=phone&sort=price&direction=asc')
-            .then(res => res.json())
+        // Proxy-only fallback: call the server proxy for all example routes and log success/failure
+        tryProxy('/public/products?per_page=5&q=phone&sort=price&direction=asc', { headers: { 'Accept': 'application/json' } })
+            .then(res => res.ok ? res.json() : Promise.reject(res))
             .then(data => {
-                console.log("Products:", data);
+                console.log('✅ Products:', data);
                 updateDomForRoute('/public/products', data);
-            })
-            .catch(() => {});
-        // Categories
-    fetch(apiBase + '/public/categories')
-            .then(res => res.json())
+            }).catch(err => console.warn('❌ /public/products (fallback) failed', err));
+
+        tryProxy('/public/categories', { headers: { 'Accept': 'application/json' } })
+            .then(res => res.ok ? res.json() : Promise.reject(res))
             .then(data => {
-                console.log("Categories:", data);
+                console.log('✅ Categories:', data);
                 updateDomForRoute('/public/categories', data);
-            })
-            .catch(() => {});
-        // Product detail
-    fetch(apiBase + '/public/products/101')
-            .then(res => res.json())
+            }).catch(err => console.warn('❌ /public/categories (fallback) failed', err));
+
+        tryProxy('/public/products/101', { headers: { 'Accept': 'application/json' } })
+            .then(res => res.ok ? res.json() : Promise.reject(res))
             .then(data => {
-                console.log("Product Detail:", data);
+                console.log('✅ Product Detail:', data);
                 updateDomForRoute('/public/products/101', data);
-            })
-            .catch(() => {});
-        // Prices
-    fetch(apiBase + '/public/prices?product_id=101')
-            .then(res => res.json())
+            }).catch(err => console.warn('❌ /public/products/101 (fallback) failed', err));
+
+        tryProxy('/public/prices?product_id=101', { headers: { 'Accept': 'application/json' } })
+            .then(res => res.ok ? res.json() : Promise.reject(res))
             .then(data => {
-                console.log("Prices:", data);
+                console.log('✅ Prices:', data);
                 updateDomForRoute('/public/prices', data);
-            })
-            .catch(() => {});
-        // Price categories
-    fetch(apiBase + '/public/price-categories')
-            .then(res => res.json())
+            }).catch(err => console.warn('❌ /public/prices (fallback) failed', err));
+
+        tryProxy('/public/price-categories', { headers: { 'Accept': 'application/json' } })
+            .then(res => res.ok ? res.json() : Promise.reject(res))
             .then(data => {
-                console.log("Price Categories:", data);
+                console.log('✅ Price Categories:', data);
                 updateDomForRoute('/public/price-categories', data);
-            })
-            .catch(() => {});
-        // Images
-    fetch(apiBase + '/public/images?per_page=10')
-            .then(res => res.json())
+            }).catch(err => console.warn('❌ /public/price-categories (fallback) failed', err));
+
+        tryProxy('/public/images?per_page=10', { headers: { 'Accept': 'application/json' } })
+            .then(res => res.ok ? res.json() : Promise.reject(res))
             .then(data => {
-                console.log("Images:", data);
+                console.log('✅ Images:', data);
                 updateDomForRoute('/public/images', data);
-            })
-            .catch(() => {});
+            }).catch(err => console.warn('❌ /public/images (fallback) failed', err));
     }
 }
 
@@ -274,48 +277,25 @@ setInterval(() => {
 }, 3000);
 
 // Smooth header scrolled toggle: add/remove `scrolled` class when user scrolls past threshold
-// Improved header scroll logic: avoid toggling when user scrolls only a few pixels near top
 (function addHeaderScrollListener() {
-    let lastScrolled = null;
-    let ticking = false;
-    const MIN_THRESHOLD = 70; // minimum pixels before header is considered "scrolled"
-
-    function getScrollY() {
-        return window.scrollY || document.documentElement.scrollTop || 0;
-    }
-
-    function update() {
+    // safe guard: run after DOM is ready
+    function install() {
         const header = document.querySelector('header');
         if (!header) return;
-
-        const headerHeight = header.offsetHeight || 0;
-        // use a threshold that scales with header height but never below MIN_THRESHOLD
-        const threshold = Math.max(MIN_THRESHOLD, Math.round(headerHeight * 0.75));
-
-        const scrollY = getScrollY();
-        const shouldBeScrolled = scrollY > threshold;
-
-        if (lastScrolled !== shouldBeScrolled) {
-            header.classList.toggle('scrolled', shouldBeScrolled);
-            lastScrolled = shouldBeScrolled;
-        }
-    }
-
-    function onScroll() {
-        if (!ticking) {
-            ticking = true;
-            window.requestAnimationFrame(() => {
-                update();
-                ticking = false;
-            });
-        }
-    }
-
-    function install() {
-        lastScrolled = null;
-        update(); // set initial state
+        const onScroll = () => {
+            try {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            } catch (e) {
+                // defensive: ignore errors
+            }
+        };
+        // initial state
+        onScroll();
         window.addEventListener('scroll', onScroll, { passive: true });
-        window.addEventListener('resize', update, { passive: true });
     }
 
     if (document.readyState === 'loading') {

@@ -11,13 +11,18 @@ async function init() {
     // Default to localhost:5000 if server didn't inject a meta tag
     const apiBase = apiBaseMeta ? normalizeBase(apiBaseMeta.content) : '';
 
+        // Proxy-only helper (catalogue): always call the server's /proxy so the server can inject keys/tenant.
         async function tryApiThenProxyLocal(path, options = {}) {
-            const apiUrl = (apiBase || '') + (path.startsWith('/') ? path : ('/' + path));
-            // Directly call the configured API base (e.g. http://localhost:5000).
-            // If the upstream requires an API key or blocks browser origins with CORS,
-            // you'll need to use the server proxy instead.
+            const url = '/proxy' + (path.startsWith('/') ? path : ('/' + path));
+            options = Object.assign({}, options || {});
             options.headers = Object.assign({}, options.headers || {});
-            return fetch(apiUrl, options);
+            if (typeof options.credentials === 'undefined') options.credentials = 'same-origin';
+            // Include injected tenant/public key meta if present so upstream accepts the request
+            const tenantMeta = document.querySelector('meta[name="public-tenant"]');
+            const publicKeyMeta = document.querySelector('meta[name="public-api-key"]');
+            if (tenantMeta && tenantMeta.content && !options.headers['X-Tenant']) options.headers['X-Tenant'] = tenantMeta.content;
+            if (publicKeyMeta && publicKeyMeta.content && !options.headers['X-API-Key']) options.headers['X-API-Key'] = publicKeyMeta.content;
+            return fetch(url, options);
         }
 
         // Fetch categories
