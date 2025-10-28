@@ -137,7 +137,7 @@ async function init() {
                             <span class="tag" style="background:${color}">${d.class}</span>
                             <h4 class="name" id="${encodeURIComponent(d.trade)}">${d.trade}</h4>
                             <p class="strength">${d.generic} — ${d.strength}</p>
-                            <p class="price">Trade: <strong>KSh ${fmt(d.tradePrice)}</strong><br>Retail: <strong>${d.retailPrice ? `KSh ${fmt(d.retailPrice)}` : 'NETT'}</strong></p>
+                            
                         </div>
                     </div>`;
                 }).join('');
