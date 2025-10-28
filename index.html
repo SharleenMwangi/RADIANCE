@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Radiance Pharmaceuticals</title>
     <link rel="stylesheet" href="static/css/style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Public API meta tags -->
     <!-- public API key removed for security; server-side proxy will attach the key to upstream requests -->
@@ -29,8 +31,8 @@
                         <i class="fas fa-phone"></i> +254 722 842 823
                     </a>
                     <span class="hours">
-      <i class="fas fa-clock"></i> Open: Mon - Fri 9.00 am - 5.00 pm
-    </span>
+                        <i class="fas fa-clock"></i> Open: Mon - Fri 9.00 am - 5.00 pm
+                    </span>
                 </div>
             </div>
         </div>
@@ -51,46 +53,55 @@
 
             <a href="#contact">Contact</a>
         </nav>
+        <!-- mobile nav toggle -->
+        <button class="nav-toggle" aria-label="Toggle navigation"><i class="fas fa-bars"></i></button>
     </header>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h2>Our Health In Our Hands</h2>
-            <p>Delivering trusted pharmaceutical solutions since 2006.</p>
-            <a href="background.html" class="btn">Learn More</a>
+    <section class="hero" style="background-image: url('static/images/background.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat; min-height: 60vh; display:flex; align-items:center; justify-content:center; position:relative; color:#fff;">
+        <div class="hero-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.45);"></div>
+        <div class="hero-content" style="position:relative; z-index:1; text-align:center; padding:3rem;">
+            <h2 style="font-size:2.5rem; margin:0 0 1rem;">Our Health In Our Hands</h2>
+            <p style="margin:0 0 1.5rem;">Delivering trusted pharmaceutical solutions since 2006.</p>
+            <a href="background.html" class="btn" style="z-index:1;">Learn More</a>
         </div>
     </section>
 
-<section id="about" class="section about-section">
-  <div class="about-container">
-    <div class="about-text">
-      <h2>About Us</h2>
-      <p>
-        Radiance Pharmaceuticals Limited was founded in 2006 by professionals with extensive experience in Kenya’s healthcare industry. We specialize in distributing high-quality, affordable products while providing training and consultancy services across the
-        region. The Kenyan healthcare industry has developed over the years to be one of the most dynamic in the region. The need for high-quality, affordable products has led to increased importation of commodities mainly from Asian countries
-        to meet the growing demand. Radiance has positioned itself as a leader in quality products in Kenya. We also engage in training and knowledge transfer to the medical fraternity through CMEs, consultancy services, and market information
-        feedback.
-      </p>
-    </div>
+    <section id="about" class="section about-section">
+        <div class="about-container">
+            <div class="about-text">
+                <h2>About Us</h2>
+                <p>
+                    Radiance Pharmaceuticals Limited was founded in 2006 by professionals with extensive experience in
+                    Kenya’s healthcare industry. We specialize in distributing high-quality, affordable products while
+                    providing training and consultancy services across the
+                    region. The Kenyan healthcare industry has developed over the years to be one of the most dynamic in
+                    the region. The need for high-quality, affordable products has led to increased importation of
+                    commodities mainly from Asian countries
+                    to meet the growing demand. Radiance has positioned itself as a leader in quality products in Kenya.
+                    We also engage in training and knowledge transfer to the medical fraternity through CMEs,
+                    consultancy services, and market information
+                    feedback.
+                </p>
+            </div>
 
-    <div class="about-image">
-      <div class="carousel">
-        <div class="slides">
-          <img src="static/images/front.jpg" alt="Radiance Front View">
-          <img src="static/images/office.jpg" alt="Office">
-          <img src="static/images/office1.jpg" alt="Office Interior">
-          <img src="static/images/store1.jpg" alt="Store 1">
-          <img src="static/images/store2.jpg" alt="Store 2">
-          <img src="static/images/store3.jpg" alt="Store 3">
-          <img src="static/images/store4.jpg" alt="Store 4">
-          <img src="static/images/delivery2" alt="delivery 2">
+            <div class="about-image">
+                <div class="carousel">
+                    <div class="slides">
+                        <img src="static/images/front.jpg" alt="Radiance Front View">
+                        <img src="static/images/office.jpg" alt="Office">
+                        <img src="static/images/office1.jpg" alt="Office Interior">
+                        <img src="static/images/store1.jpg" alt="Store 1">
+                        <img src="static/images/store2.jpg" alt="Store 2">
+                        <img src="static/images/store3.jpg" alt="Store 3">
+                        <img src="static/images/store4.jpg" alt="Store 4">
+                        <img src="static/images/delivery2" alt="delivery 2">
+                    </div>
+                    <button class="prev">&#10094;</button>
+                    <button class="next">&#10095;</button>
+                </div>
+            </div>
         </div>
-        <button class="prev">&#10094;</button>
-        <button class="next">&#10095;</button>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
 
 
 
@@ -106,13 +117,17 @@
         <!-- Tab Content -->
         <div class="tab-contents active-tab" id="vision">
             <ul>
-                <li><span>OUR VISION:</span> To emerge as a leading company in the region offering high quality and affordable products and services, thus remaining valuable partners to our clients and suppliers.</li>
+                <li><span>OUR VISION:</span> To emerge as a leading company in the region offering high quality and
+                    affordable products and services, thus remaining valuable partners to our clients and suppliers.
+                </li>
             </ul>
         </div>
 
         <div class="tab-contents" id="mission">
             <ul>
-                <li><span>OUR MISSION:</span> We are committed to being the premier company offering a reliable link between the manufacturers and the users. We apply ethical standards in acquiring, marketing, and distributing pharmaceutical products.</li>
+                <li><span>OUR MISSION:</span> We are committed to being the premier company offering a reliable link
+                    between the manufacturers and the users. We apply ethical standards in acquiring, marketing, and
+                    distributing pharmaceutical products.</li>
             </ul>
         </div>
     </section>
@@ -143,11 +158,13 @@
         </div>
     </section>
 
-    
+
     <section id="products" class="section">
         <h2>Our Products</h2>
         <p>
-            Radiance Pharmaceuticals manufactures and distributes a wide range of high-quality, affordable medicines across categories including antibiotics, pain relief, vitamins, injections, and more. Our portfolio ensures safety, efficacy, and reliability for
+            Radiance Pharmaceuticals manufactures and distributes a wide range of high-quality, affordable medicines
+            across categories including antibiotics, pain relief, vitamins, injections, and more. Our portfolio ensures
+            safety, efficacy, and reliability for
             all patients.
         </p>
 
@@ -216,6 +233,41 @@
             </div>
         </div>
     </section>
+    <section id="delivery" class="section delivery-section">
+        <div class="delivery-container">
+            <div class="delivery-text">
+                <h2>Delivery & Logistics</h2>
+                <p>
+                    At Radiance Pharmaceuticals, we pride ourselves on ensuring timely and efficient delivery of all our
+                    products across Kenya.
+                    <br><br>
+                    For deliveries <strong>within Nairobi and its environs</strong>, our dedicated logistics team
+                    handles dispatch directly to hospitals, clinics, and pharmacies — guaranteeing reliability and care
+                    from our warehouse to your doorstep.
+                    <br><br>
+                    For deliveries to <strong>other parts of the country</strong>, we partner with reputable courier
+                    services such as <strong>Fargo Courier</strong> and <strong>G4S</strong> to ensure safe, traceable,
+                    and prompt transportation of all medical products to their destinations.
+                    <br><br>
+                    Whether near or far, Radiance ensures your supplies arrive on time and in perfect condition.
+                </p>
+            </div>
+
+            <div class="delivery-image">
+                <div class="carousel">
+                    <div class="slides">
+                        <img src="static/images/delivery.jpg" alt="Radiance Delivery Van">
+                        <img src="static/images/delivery2.jpg" alt="Nairobi Dispatch Team">
+                        <img src="static/images/delivery3.jpg" alt="Fargo Delivery Service">
+                        <img src="static/images/delivery4.jpg" alt="G4S Courier Dispatch">
+                    </div>
+                    <button class="prev">&#10094;</button>
+                    <button class="next">&#10095;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="contact" id="contact">
         <div class="contact-intro">
             <h2>Want to Reach Out to Us?</h2>
@@ -242,44 +294,14 @@
                 <!-- Clickable Google Map -->
                 <div class="map-container" style="margin-top:10px;">
                     <a href="https://www.google.com/maps/place/Nairobi,+Kenya" target="_blank">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.197123453568!2d36.8219468!3d-1.2920659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f10d9737bb7f3%3A0xdeb32d97dbe9d30!2sNairobi!5e0!3m2!1sen!2ske!4v1692456000000!5m2!1sen!2ske"
-                            width="600" height="300" style="border:0; border-radius:8px; width:100%; max-width:600px;" allowfullscreen="" loading="lazy">
-    </iframe>
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.197123453568!2d36.8219468!3d-1.2920659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f10d9737bb7f3%3A0xdeb32d97dbe9d30!2sNairobi!5e0!3m2!1sen!2ske!4v1692456000000!5m2!1sen!2ske"
+                            width="600" height="300" style="border:0; border-radius:8px; width:100%; max-width:600px;"
+                            allowfullscreen="" loading="lazy">
+                        </iframe>
                     </a>
                 </div>
             </div>
-
-            <section id="delivery" class="section delivery-section">
-  <div class="delivery-container">
-    <div class="delivery-text">
-      <h2>Delivery & Logistics</h2>
-      <p>
-        At Radiance Pharmaceuticals, we pride ourselves on ensuring timely and efficient delivery of all our products across Kenya.  
-        <br><br>
-        For deliveries <strong>within Nairobi and its environs</strong>, our dedicated logistics team handles dispatch directly to hospitals, clinics, and pharmacies — guaranteeing reliability and care from our warehouse to your doorstep.  
-        <br><br>
-        For deliveries to <strong>other parts of the country</strong>, we partner with reputable courier services such as <strong>Fargo Courier</strong> and <strong>G4S</strong> to ensure safe, traceable, and prompt transportation of all medical products to their destinations.  
-        <br><br>
-        Whether near or far, Radiance ensures your supplies arrive on time and in perfect condition.
-      </p>
-    </div>
-
-    <div class="delivery-image">
-      <div class="carousel">
-        <div class="slides">
-          <img src="static/images/delivery.jpg" alt="Radiance Delivery Van">
-          <img src="static/images/delivery2.jpg" alt="Nairobi Dispatch Team">
-          <img src="static/images/delivery3.jpg" alt="Fargo Delivery Service">
-          <img src="static/images/delivery4.jpg" alt="G4S Courier Dispatch">
-        </div>
-        <button class="prev">&#10094;</button>
-        <button class="next">&#10095;</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-
             <!-- Contact Form -->
             <form class="contact-form">
                 <div class="form-group">
@@ -325,51 +347,65 @@
 
     <script src="static/js/catalogue.js"></script>
     <script src="static/js/main.js"></script>
+        <script>
+            // Mobile nav toggle
+            (function(){
+                const navToggle = document.querySelector('.nav-toggle');
+                const header = document.querySelector('header');
+                navToggle && navToggle.addEventListener('click', () => {
+                    header.classList.toggle('nav-open');
+                });
+                // Close mobile nav when clicking any link inside nav
+                document.querySelectorAll('header nav a').forEach(a => {
+                    a.addEventListener('click', () => header.classList.remove('nav-open'));
+                });
+            })();
+        </script>
     <script>
-  const slides = document.querySelector('.slides');
-  const images = document.querySelectorAll('.slides img');
-  const prevBtn = document.querySelector('.prev');
-  const nextBtn = document.querySelector('.next');
+        const slides = document.querySelector('.slides');
+        const images = document.querySelectorAll('.slides img');
+        const prevBtn = document.querySelector('.prev');
+        const nextBtn = document.querySelector('.next');
 
-  let index = 0;
+        let index = 0;
 
-  function showSlide(i) {
-    if (i < 0) index = images.length - 1;
-    else if (i >= images.length) index = 0;
-    else index = i;
+        function showSlide(i) {
+            if (i < 0) index = images.length - 1;
+            else if (i >= images.length) index = 0;
+            else index = i;
 
-    slides.style.transform = `translateX(-${index * 100}%)`;
-  }
+            slides.style.transform = `translateX(-${index * 100}%)`;
+        }
 
-  prevBtn.addEventListener('click', () => showSlide(index - 1));
-  nextBtn.addEventListener('click', () => showSlide(index + 1));
+        prevBtn.addEventListener('click', () => showSlide(index - 1));
+        nextBtn.addEventListener('click', () => showSlide(index + 1));
 
-  // Auto-slide every 4 seconds
-  setInterval(() => showSlide(index + 1), 4000);
-</script>
-<script>
-  document.querySelectorAll('.carousel').forEach(carousel => {
-    const slides = carousel.querySelector('.slides');
-    const images = carousel.querySelectorAll('.slides img');
-    const prevBtn = carousel.querySelector('.prev');
-    const nextBtn = carousel.querySelector('.next');
+        // Auto-slide every 4 seconds
+        setInterval(() => showSlide(index + 1), 4000);
+    </script>
+    <script>
+        document.querySelectorAll('.carousel').forEach(carousel => {
+            const slides = carousel.querySelector('.slides');
+            const images = carousel.querySelectorAll('.slides img');
+            const prevBtn = carousel.querySelector('.prev');
+            const nextBtn = carousel.querySelector('.next');
 
-    let index = 0;
+            let index = 0;
 
-    function showSlide(i) {
-      if (i < 0) index = images.length - 1;
-      else if (i >= images.length) index = 0;
-      else index = i;
-      slides.style.transform = `translateX(-${index * 100}%)`;
-    }
+            function showSlide(i) {
+                if (i < 0) index = images.length - 1;
+                else if (i >= images.length) index = 0;
+                else index = i;
+                slides.style.transform = `translateX(-${index * 100}%)`;
+            }
 
-    prevBtn.addEventListener('click', () => showSlide(index - 1));
-    nextBtn.addEventListener('click', () => showSlide(index + 1));
+            prevBtn.addEventListener('click', () => showSlide(index - 1));
+            nextBtn.addEventListener('click', () => showSlide(index + 1));
 
-    setInterval(() => showSlide(index + 1), 4000);
-  });
-</script>
- 
+            setInterval(() => showSlide(index + 1), 4000);
+        });
+    </script>
+
 
 </body>
 
