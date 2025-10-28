@@ -7,6 +7,7 @@
     <meta name="description" content="Explore Radiance Pharmaceuticals' product catalog, featuring high-quality medicines organized by trade name." />
     <title>Products by Trade Name | Radiance Pharmaceuticals</title>
     <link rel="stylesheet" href="static/css/style.css" />
+    <link rel="stylesheet" href="static/css/new.css" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- public API key removed for security; server-side proxy will attach the key to upstream requests -->
@@ -14,34 +15,30 @@
 </head>
 
 <body class="catalog-page">
+   <!-- header imported from partials/_header.html -->
     <header>
-        <div class="container">
-            <div class="branding">
-                <img src="static/images/Logo.png" alt="Radiance Logo" class="logo" />
-                <div class="contact-info">
-                    <a href="tel:+254711638779" class="phone-number">
-                        <i class="fas fa-phone"></i> +254 711 638 779
-                    </a>
-                    <a href="tel:+254722842823" class="phone-number">
-                        <i class="fas fa-phone"></i> +254 722 842 823
-                    </a>
-                    <span class="hours">
-                        <i class="fas fa-clock"></i> Open: Mon - Fri 9.00 am - 5.00 pm
-                    </span>
-                </div>
-            </div>
+
+        <div class="container header-flex">
+            <img src="static/images/Logo.png" alt="Radiance Logo" class="logo" />
+            <button class="hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav">
+                <span></span><span></span><span></span>
+            </button>
         </div>
-        <nav>
-            <a href="index.html#about">About Us</a>
-            <a href="index.html#vision-mission">Vision & Mission</a>
+
+        <nav id="main-nav">
+            <a href="#about">About Us</a>
+            <a href="#vision-mission">Vision & Mission</a>
             <div class="dropdown">
                 <a class="dropbtn">Our Products</a>
-                <div class="dropdown-content" id="dd-categories"></div>
+                <div class="dropdown-content" id="dd-categories">
+                    <!-- categories links will be populated here by JS -->
+                </div>
             </div>
-            <a href="index.html#partners">Partners</a>
-            <a href="index.html#clients">Clients</a>
-            <a href="index.html#contact">Contact</a>
+            <a href="#partners">Partners</a>
+            <a href="#clients">Clients</a>
+            <a href="#contact">Contact</a>
         </nav>
+    
     </header>
     <main>
         <!-- <div class="page-header">
