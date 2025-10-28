@@ -276,31 +276,63 @@ setInterval(() => {
     items[currentIndex].classList.add("active");
 }, 3000);
 
-// Smooth header scrolled toggle: add/remove `scrolled` class when user scrolls past threshold
-(function addHeaderScrollListener() {
-    // safe guard: run after DOM is ready
-    function install() {
-        const header = document.querySelector('header');
-        if (!header) return;
-        const onScroll = () => {
-            try {
-                if (window.scrollY > 50) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
-            } catch (e) {
-                // defensive: ignore errors
-            }
-        };
-        // initial state
-        onScroll();
-        window.addEventListener('scroll', onScroll, { passive: true });
-    }
+// Smooth header scrolled toggle: add/remove `scrolled` class and shrink logo when user scrolls past threshold
+// (function addHeaderScrollListener() {
+//     function install() {
+//         const header = document.querySelector('header');
+//         const logo = header ? header.querySelector('.logo, .site-logo, img') : null;
+//         let lastScrolled = null;
+//         let ticking = false;
+//         const threshold = 50;
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', install);
-    } else {
-        install();
-    }
-})();
+//         function updateHeader() {
+//             const scrolled = window.scrollY > threshold;
+//             if (scrolled !== lastScrolled) {
+//                 lastScrolled = scrolled;
+//                 if (header) {
+//                     header.classList.toggle('scrolled', scrolled);
+//                 }
+//                 if (logo) {
+//                     logo.style.transition = 'all 0.3s cubic-bezier(.4,0,.2,1)';
+//                     logo.style.height = scrolled ? '24px' : '56px';
+//                     logo.style.maxWidth = scrolled ? '100px' : '200px';
+//                 }
+//             }
+//             ticking = false;
+//         }
+
+//         function onScroll() {
+//             if (!ticking) {
+//                 window.requestAnimationFrame(updateHeader);
+//                 ticking = true;
+//             }
+//         }
+
+//         // initial state
+//         updateHeader();
+//         window.addEventListener('scroll', onScroll, { passive: true });
+//     }
+
+//     if (document.readyState === 'loading') {
+//         document.addEventListener('DOMContentLoaded', install);
+//     } else {
+//         install();
+//     }
+// })();
+
+const hamburger = document.querySelector('.hamburger');
+const nav = document.getElementById('main-nav');
+
+hamburger.addEventListener('click', () => {
+  const expanded = hamburger.getAttribute('aria-expanded') === 'true';
+  hamburger.setAttribute('aria-expanded', !expanded);
+  nav.classList.toggle('show');
+});
+
+// ✅ Optional: Mobile dropdown tap behavior
+document.querySelectorAll('.dropbtn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    btn.classList.toggle('active');
+  });
+});

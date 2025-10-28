@@ -167,12 +167,12 @@ async function init() {
             const carouselItems = filteredProducts.slice(0, 10).map((d, index) => {
                 const color = classColors[d.class] || '#94a3b8';
                 const img = (d.image_urls && d.image_urls[0]) ? d.image_urls[0] : svgPlaceholder((d.trade || '').split(' ')[0], color);
-                return `<div class="carousel-item ${index === 0 ? 'active' : ''}">
+                return `<div class="carousel-item container  ${index === 0 ? 'active' : ''}">
                     <img src="${img}" alt="${d.trade}">
                     <p><strong>${d.trade}</strong><br>${d.generic} ${d.strength}</p>
                 </div>`;
             }).join('');
-            section.innerHTML = `<div class="carousel">${carouselItems}</div>`;
+            section.innerHTML = `<div class="product-search-container">${carouselItems}</div>`;
         }
 
         // Populate category list for index.html
