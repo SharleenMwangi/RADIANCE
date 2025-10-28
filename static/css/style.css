@@ -999,3 +999,65 @@ header.scrolled .contact-info {
         margin: 0 10px;
     }
 }
+
+/* Additional responsive styles: mobile nav and small-screen polish */
+
+/* Mobile nav toggle button */
+.nav-toggle{
+    display:none;
+    background:transparent;
+    border:0;
+    font-size:1.35rem;
+    cursor:pointer;
+    color:var(--primary);
+}
+
+@media (max-width: 900px){
+    .nav-toggle{display:inline-block}
+    header{padding:0.6rem 1rem}
+    /* ensure header is positioned so the absolute toggle sits relative to it */
+    header{position:sticky; top:0}
+    /* position the burger in the top-right for easy reach */
+    .nav-toggle{position:absolute; top:10px; right:14px; z-index:220; padding:6px 8px; border-radius:6px; background:transparent}
+    .container{width:100%;padding:0;display:flex;align-items:center;justify-content:space-between}
+    .logo{height:56px}
+    header .contact-info{display:none}
+
+    /* Mobile nav: bottom sheet */
+    nav{
+        position:fixed;
+        left:0;right:0;bottom:0;
+        background:linear-gradient(#fff,#fff);
+        display:flex;flex-direction:column;gap:0; padding:0.75rem 1rem;
+        transform:translateY(100%);
+        transition:transform .28s ease-in-out;
+        box-shadow:0 -10px 30px rgba(0,0,0,0.08);
+        border-top-left-radius:12px;border-top-right-radius:12px;
+        z-index:150;
+    }
+
+    header.nav-open nav{transform:translateY(0)}
+
+    nav a{display:block;padding:12px 10px;border-bottom:1px solid rgba(0,0,0,0.04);margin:0}
+    .dropdown-content{position:static;box-shadow:none;border-radius:0}
+
+    .product-search-container{flex-direction:column}
+    .search-box{width:100%}
+    .product-display{width:100%}
+
+    .slides img{height:220px}
+    .delivery-image .slides img{height:220px}
+}
+
+@media (max-width:480px){
+    .logo{height:48px}
+    .hero h2{font-size:1.6rem}
+    .hero p{font-size:1rem}
+    .slides img{height:180px}
+    .contact-container{grid-template-columns:1fr}
+    .contact-info{order:2}
+    .contact-form{order:1}
+}
+
+/* Ensure images are responsive */
+img{max-width:100%;height:auto}
