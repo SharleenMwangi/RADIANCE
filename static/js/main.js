@@ -1,306 +1,307 @@
-// main.js
-// All previously inline scripts from index.html are now here
+/* ==============================================================
+   main.js – All page interactivity (tabs, carousels, API demo,
+   mobile menu, header scroll, product search)
+   ============================================================== */
 
-function openTab(tabName) {
-    // Remove active states
-    const links = document.querySelectorAll(".tab-link");
-    const contents = document.querySelectorAll(".tab-contents");
+/* --------------------------------------------------------------
+   1. TAB SWITCHING (Vision / Mission)
+   -------------------------------------------------------------- */
+function openTab(evt, tabName) {
+    // Remove active classes
+    document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active-link'));
+    document.querySelectorAll('.tab-contents').forEach(c => c.classList.remove('active-tab'));
 
-    links.forEach(link => link.classList.remove("active-link"));
-    contents.forEach(content => content.classList.remove("active-tab"));
-
-    // Activate the selected tab
-    document.getElementById(tabName).classList.add("active-tab");
-    event.target.classList.add("active-link");
+    // Activate selected tab
+    document.getElementById(tabName).classList.add('active-tab');
+    evt.currentTarget.classList.add('active-link');
 }
 
-// Full product dataset
+/* --------------------------------------------------------------
+   2. MOBILE MENU TOGGLE
+   -------------------------------------------------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.querySelector('.nav-toggle');
+    const header = document.querySelector('header');
+
+    if (toggle && header) {
+        toggle.addEventListener('click', () => {
+            header.classList.toggle('nav-open');
+        });
+
+        // Close when clicking a link (nice UX)
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                header.classList.remove('nav-open');
+            });
+        });
+    }
+});
+
+/* --------------------------------------------------------------
+   3. HEADER SCROLL EFFECT
+   -------------------------------------------------------------- */
+(function headerScroll() {
+    const header = document.querySelector('header');
+    if (!header) return;
+
+    const onScroll = () => {
+        header.classList.toggle('scrolled', window.scrollY > 50);
+    };
+
+    onScroll();                     // initial check
+    window.addEventListener('scroll', onScroll, { passive: true });
+})();
+
+/* --------------------------------------------------------------
+   4. REUSABLE CAROUSEL (partners, clients, hero, about, delivery)
+   -------------------------------------------------------------- */
+class SimpleCarousel {
+    constructor(containerSel, options = {}) {
+        this.container = document.querySelector(containerSel);
+        if (!this.container) return;
+
+        this.slides = this.container.querySelectorAll('.slides img, .carousel-item');
+        this.prevBtn = this.container.querySelector('.prev');
+        this.nextBtn = this.container.querySelector('.next');
+        this.idx = 0;
+        this.auto = options.auto ?? true;
+        this.interval = options.interval ?? 4000;
+
+        this.init();
+    }
+
+    init() {
+        if (this.slides.length <= 1) return;
+
+        this.showSlide(this.idx);
+        this.bindButtons();
+        if (this.auto) this.startAuto();
+    }
+
+    showSlide(n) {
+        this.slides.forEach((s, i) => {
+            s.style.transform = `translateX(${(i - n) * 100}%)`;
+        });
+    }
+
+    next() {
+        this.idx = (this.idx + 1) % this.slides.length;
+        this.showSlide(this.idx);
+    }
+
+    prev() {
+        this.idx = (this.idx - 1 + this.slides.length) % this.slides.length;
+        this.showSlide(this.idx);
+    }
+
+    bindButtons() {
+        if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.next());
+        if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.prev());
+    }
+
+    startAuto() {
+        this.timer = setInterval(() => this.next(), this.interval);
+        this.container.addEventListener('mouseenter', () => clearInterval(this.timer));
+        this.container.addEventListener('mouseleave', () => this.timer = setInterval(() => this.next(), this.interval));
+    }
+}
+
+/* Initialise all carousels */
+document.addEventListener('DOMContentLoaded', () => {
+    // Hero / About / Delivery carousels
+    document.querySelectorAll('.carousel').forEach(el => new SimpleCarousel(el, { auto: true }));
+
+    // Partners / Clients infinite scroll (duplicate content for seamless loop)
+    ['.partners-carousel', '.clients-carousel'].forEach(sel => {
+        const el = document.querySelector(sel);
+        if (el) el.innerHTML += el.innerHTML; // duplicate for loop
+    });
+});
+
+/* --------------------------------------------------------------
+   5. PRODUCT SEARCH (static fallback)
+   -------------------------------------------------------------- */
 const products = [
-    // ...existing code...
+    // ← paste your full product array here (or load via API)
 ];
 
-// Load public route definitions and call each documented endpoint
-async function setupPublicAPIExamples() {
-    // Expose a global promise so other pages can await discovered products
-    if (!window.publicProductsReady) {
-        window.publicProductsReady = new Promise((resolve) => { window.__resolvePublicProducts = resolve; });
+function searchProduct() {
+    const input = (document.getElementById('searchInput')?.value ?? '').toLowerCase().trim();
+    const container = document.getElementById('productResults');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (!input) {
+        container.innerHTML = '<p>Type a product name to search.</p>';
+        return;
     }
-    const partnerCarousel = document.querySelector(".partners-carousel");
-    const clientCarousel = document.querySelector(".clients-carousel");
-    if (partnerCarousel) partnerCarousel.innerHTML += partnerCarousel.innerHTML;
-    if (clientCarousel) clientCarousel.innerHTML += clientCarousel.innerHTML;
+
+    const matches = products.filter(p => p.name.toLowerCase().includes(input));
+
+    if (matches.length) {
+        matches.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <img src="${p.image}" alt="${p.name}" loading="lazy">
+                <h3>${p.name}</h3>
+                <p>${p.class || ''}</p>
+            `;
+            container.appendChild(card);
+        });
+    } else {
+        container.innerHTML = '<p>No product found.</p>';
+    }
+}
+
+/* Bind search on Enter or button click */
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('searchInput');
+    const btn = document.querySelector('.search-box button');
+    if (input) input.addEventListener('keypress', e => e.key === 'Enter' && searchProduct());
+    if (btn) btn.addEventListener('click', searchProduct);
+});
+
+/* --------------------------------------------------------------
+   6. PUBLIC API DEMO (discover routes, fill placeholders)
+   -------------------------------------------------------------- */
+(async function setupPublicAPIExamples() {
+    // Global promise for other pages that need the product list
+    if (!window.publicProductsReady) {
+        window.publicProductsReady = new Promise(res => { window.__resolvePublicProducts = res; });
+    }
 
     const apiBaseMeta = document.querySelector('meta[name="public-api-base"]');
-    // Use configured API base (injected by server) or fall back to localhost:5000
-    // Trim any trailing slash so concatenation below is consistent.
-    function normalizeBase(b) { return (b || '').toString().replace(/\/+$/, ''); }
-    const apiBase = apiBaseMeta ? normalizeBase(apiBaseMeta.content) : 'http://localhost:5000';
+    const apiBase = apiBaseMeta ? apiBaseMeta.content.replace(/\/+$/, '') : 'http://localhost:5000';
 
-    // Helper to update DOM elements for common endpoints
-    function updateDomForRoute(path, data) {
-        if (path === '/public/products') {
-            const el = document.getElementById('productsList');
-            if (el && data?.products) {
-                el.innerHTML = '<h3>Products</h3><ul>' + data.products.map(p => `<li>${p.name} (${p.price ?? ''})</li>`).join('') + '</ul>';
-            }
-        } else if (path === '/public/categories') {
-            const el = document.getElementById('categoryList');
-            // Support APIs that return either an array or an object { categories: [...] }
-            const categories = Array.isArray(data) ? data : (data?.categories || []);
-            if (el && categories && categories.length) {
-                el.innerHTML = '<h3>Product Categories</h3><ul>' + categories.map(c => `<li>${c.name}</li>`).join('') + '</ul>';
-            }
-        } else if (path.startsWith('/public/products/')) {
-            const el = document.getElementById('productDetail');
-            if (el && data?.name) el.innerHTML = `<h3>${data.name}</h3><p>${data.description || ''}</p>`;
-        } else if (path === '/public/prices') {
-            const el = document.getElementById('pricesList');
-            if (el && Array.isArray(data)) {
-                el.innerHTML = '<h3>Prices</h3><ul>' + data.map(p => `<li>${p.price_type}: ${p.value} ${p.currency}</li>`).join('') + '</ul>';
-            }
-        } else if (path === '/public/price-categories') {
-            const el = document.getElementById('priceCategoriesList');
-            if (el && Array.isArray(data)) {
-                el.innerHTML = '<h3>Price Categories</h3><ul>' + data.map(c => `<li>${c.name}: Trade ${c.tradePrice}, Retail ${c.retailPrice}</li>`).join('') + '</ul>';
-            }
-        } else if (path === '/public/images') {
-            const el = document.getElementById('imagesList');
-            // API may return an array directly or { images: [...] }
-            const images = Array.isArray(data) ? data : (data?.images || []);
-            if (el && images && images.length) {
-                el.innerHTML = '<h3>Images</h3><ul>' + images.map(img => `<li>${img.name}: <img src="${img.url}" alt="${img.name}" style="height:40px"></li>`).join('') + '</ul>';
-            }
+    /** Helper – fetch via server proxy (injects tenant/key) */
+    async function proxyFetch(path, opts = {}) {
+        const url = '/proxy' + (path.startsWith('/') ? path : '/' + path);
+        const headers = { ...opts.headers, Accept: 'application/json' };
+
+        // Tenant / public key injection (server-side fallback still works)
+        const tenant = document.querySelector('meta[name="public-tenant"]')?.content;
+        const pubKey = document.querySelector('meta[name="public-api-key"]')?.content;
+        if (tenant) headers['X-Tenant'] = tenant;
+        if (pubKey) headers['X-API-Key'] = pubKey;
+
+        return fetch(url, { ...opts, headers, credentials: 'same-origin' });
+    }
+
+    /** Render API response into the correct placeholder */
+    function render(path, data) {
+        const map = {
+            '/public/products': () => {
+                const el = document.getElementById('productsList');
+                if (!el || !data?.products) return;
+                el.innerHTML = `<h3>Products</h3><ul>${data.products.map(p => `<li>${p.name} (${p.price ?? ''})</li>`).join('')}</ul>`;
+            },
+            '/public/categories': () => {
+                const el = document.getElementById('categoryList');
+                const cats = Array.isArray(data) ? data : data?.categories || [];
+                if (!el || !cats.length) return;
+                el.innerHTML = `<h3>Product Categories</h3><ul>${cats.map(c => `<li>${c.name}</li>`).join('')}</ul>`;
+            },
+            // product detail (dynamic id)
+            /^\/public\/products\/\d+$/: () => {
+                const el = document.getElementById('productDetail');
+                if (!el || !data?.name) return;
+                el.innerHTML = `<h3>${data.name}</h3><p>${data.description || ''}</p>`;
+            },
+            '/public/prices': () => {
+                const el = document.getElementById('pricesList');
+                if (!el || !Array.isArray(data)) return;
+                el.innerHTML = `<h3>Prices</h3><ul>${data.map(p => `<li>${p.price_type}: ${p.value} ${p.currency}</li>`).join('')}</ul>`;
+            },
+            '/public/price-categories': () => {
+                const el = document.getElementById('priceCategoriesList');
+                if (!el || !Array.isArray(data)) return;
+                el.innerHTML = `<h3>Price Categories</h3><ul>${data.map(c => `<li>${c.name}: Trade ${c.tradePrice}, Retail ${c.retailPrice}</li>`).join('')}</ul>`;
+            },
+            '/public/images': () => {
+                const el = document.getElementById('imagesList');
+                const imgs = Array.isArray(data) ? data : data?.images || [];
+                if (!el || !imgs.length) return;
+                el.innerHTML = `<h3>Images</h3><ul>${imgs.map(i => `<li>${i.name}: <img src="${i.url}" alt="${i.name}" style="height:40px"></li>`).join('')}</ul>`;
+            },
+        };
+
+        for (const [pattern, fn] of Object.entries(map)) {
+            if (typeof pattern === 'string' && pattern === path) { fn(); return; }
+            if (pattern instanceof RegExp && pattern.test(path)) { fn(); return; }
         }
     }
 
     try {
+        // Load route documentation
         const routesRes = await fetch('/static/data/public_routes.json');
-        if (!routesRes.ok) throw new Error('No routes file');
-        const doc = await routesRes.json();
-        const routes = Array.isArray(doc.routes) ? doc.routes : [];
+        if (!routesRes.ok) throw new Error('routes file missing');
+        const { routes = [] } = await routesRes.json();
 
-        // First, call the products route to discover real product IDs instead of using a hardcoded 101
         let discoveredProducts = null;
-        const prodRoute = routes.find(rt => rt.path === '/public/products');
-        // Do NOT include API keys in browser requests. The server proxy will attach
-        // the configured API key when making upstream calls.
-        const commonHeaders = { 'Accept': 'application/json' };
 
-        // small helper: fetch with retries/backoff
-        async function fetchWithRetry(url, options = {}, attempts = 3, baseDelay = 500) {
-            for (let i = 0; i < attempts; i++) {
-                try {
-                    const res = await fetch(url, options);
-                    return res;
-                } catch (err) {
-                    if (i === attempts - 1) throw err;
-                    const delay = baseDelay * Math.pow(2, i);
-                    await new Promise(r => setTimeout(r, delay));
-                }
-            }
-        }
-
-        // Proxy-only helper: always call the server's /proxy route so the server can inject keys/tenant.
-        async function tryProxy(path, options = {}) {
-            const url = '/proxy' + (path.startsWith('/') ? path : ('/' + path));
-            options = Object.assign({}, options || {});
-            options.headers = Object.assign({}, options.headers || {});
-            // Default credentials: same-origin
-            if (typeof options.credentials === 'undefined') options.credentials = 'same-origin';
-            // Read injected meta values (injected by server) and include them so upstream gets tenant info
-            const tenantMeta = document.querySelector('meta[name="public-tenant"]');
-            const publicKeyMeta = document.querySelector('meta[name="public-api-key"]');
-            if (tenantMeta && tenantMeta.content && !options.headers['X-Tenant']) {
-                options.headers['X-Tenant'] = tenantMeta.content;
-            }
-            if (publicKeyMeta && publicKeyMeta.content && !options.headers['X-API-Key']) {
-                // Only include if server explicitly injected it
-                options.headers['X-API-Key'] = publicKeyMeta.content;
-            }
-            // Allow callers to set headers; server may still inject server-side key if needed.
-            return fetch(url, options);
-        }
-
+        // 1. Discover real product IDs
+        const prodRoute = routes.find(r => r.path === '/public/products');
         if (prodRoute) {
-                try {
-                    const qsPart = (prodRoute.request && prodRoute.request.query) ? ('?' + new URLSearchParams(prodRoute.request.query).toString()) : '';
-                    const pRes = await tryProxy('/public/products' + qsPart, { headers: commonHeaders });
-                    if (pRes && pRes.ok) {
-                        discoveredProducts = await pRes.json();
-                        console.log('✅ Discovered products:', discoveredProducts);
-                        updateDomForRoute('/public/products', discoveredProducts);
-                    } else {
-                        console.warn(`❌ /public/products -> ${pRes ? pRes.status : 'no-res'}`);
-                    }
-                } catch (e) {
-                    console.warn('❌ Failed to fetch products for discovery', e);
-                } finally {
-                // Resolve global promise (avoid leaving awaiting pages hanging)
-                if (window.__resolvePublicProducts) {
-                    try { window.__resolvePublicProducts(discoveredProducts); } catch (e) { /* noop */ }
-                }
-            }
-        } else {
-            if (window.__resolvePublicProducts) {
-                try { window.__resolvePublicProducts(null); } catch (e) { /* noop */ }
+            const qs = prodRoute.request?.query ? '?' + new URLSearchParams(prodRoute.request.query) : '';
+            const res = await proxyFetch('/public/products' + qs);
+            if (res.ok) {
+                discoveredProducts = await res.json();
+                render('/public/products', discoveredProducts);
             }
         }
 
+        // Resolve global promise
+        if (window.__resolvePublicProducts) window.__resolvePublicProducts(discoveredProducts);
+
+        // 2. Call every documented route
         for (const r of routes) {
-            // If this route requires a product id, iterate real ids (limit to 5)
+            // Routes that need a real product id
             if (r.path.includes('<int:product_id>')) {
-                const ids = (discoveredProducts && Array.isArray(discoveredProducts.products)) ? discoveredProducts.products.map(p => p.id).filter(Boolean) : [];
-                if (ids.length === 0) {
-                    console.warn(`Skipping ${r.path} because no product IDs discovered`);
-                    continue;
+                const ids = discoveredProducts?.products?.map(p => p.id).filter(Boolean) ?? [];
+                if (!ids.length) continue;
+
+                const sampleIds = ids.slice(0, 3); // limit to 3 calls
+                for (const id of sampleIds) {
+                    const url = r.path.replace(/<int:product_id>/g, id);
+                    const qs = r.request?.query ? '?' + new URLSearchParams(r.request.query) : '';
+                    const res = await proxyFetch(url + qs);
+                    const data = res.ok ? await res.json().catch(() => null) : null;
+                    render(url, data);
                 }
-                const limit = Math.min(3, ids.length); // reduce discovery limit to 3 to avoid many calls
-                for (let i = 0; i < limit; i++) {
-                    const id = ids[i];
-                    let samplePath = r.path.replace(/<int:product_id>/g, String(id));
-                    const urlPath = samplePath.startsWith('/') ? samplePath : ('/' + samplePath);
-                    // build headers (include any documented headers)
-                    const headers = Object.assign({}, commonHeaders, r.request?.headers || {});
-                    try {
-                        const fullPath = urlPath + (r.request && r.request.query ? ('?' + new URLSearchParams(Object.assign({}, r.request.query, { product_id: undefined })).toString()) : '');
-                        const res = await tryProxy(fullPath, { headers });
-                        const data = await (res && res.ok ? res.json().catch(() => null) : Promise.resolve(null));
-                        console.log(`Route ${r.path} -> ${res ? res.status : 'no-res'} (id=${id})`, res && res.ok ? '✅' : '❌', data);
-                        updateDomForRoute(r.path.replace(/<int:product_id>/g, `/${id}`), data);
-                    } catch (fetchErr) {
-                        console.warn(`❌ Error fetching ${fullPath}:`, fetchErr);
-                    }
-                }
-            } else {
-                // Build URL and call once
-                let samplePath = r.path;
-                const urlPath = samplePath.startsWith('/') ? samplePath : ('/' + samplePath);
-                if (r.request && r.request.query) {
-                    // remove product_id if present in query (we don't want to hardcode 101)
-                    const q = Object.assign({}, r.request.query);
-                    delete q.product_id;
-                    // we don't need to mutate a `url` variable here; the call below will build the query string
-                }
-                const headers = Object.assign({}, commonHeaders, r.request ?.headers || {});
-                try {
-                    const fullPath = urlPath + (r.request && r.request.query ? ('?' + new URLSearchParams(r.request.query).toString()) : '');
-                    const res = await tryProxy(fullPath, { headers });
-                    const data = await (res && res.ok ? res.json().catch(() => null) : Promise.resolve(null));
-                    console.log(`Route ${r.path} -> ${res ? res.status : 'no-res'}`, res && res.ok ? '✅' : '❌', data);
-                    updateDomForRoute(r.path, data);
-                } catch (fetchErr) {
-                    console.warn(`❌ Error fetching ${urlPath}:`, fetchErr);
-                }
+                continue;
             }
+
+            // Normal route
+            const qs = r.request?.query ? '?' + new URLSearchParams(r.request.query) : '';
+            const res = await proxyFetch(r.path + qs);
+            const data = res.ok ? await res.json().catch(() => null) : null;
+            render(r.path, data);
         }
     } catch (err) {
-        console.warn('public_routes.json not available or failed to load, falling back to hard-coded examples');
-        // Proxy-only fallback: call the server proxy for all example routes and log success/failure
-        tryProxy('/public/products?per_page=5&q=phone&sort=price&direction=asc', { headers: { 'Accept': 'application/json' } })
-            .then(res => res.ok ? res.json() : Promise.reject(res))
-            .then(data => {
-                console.log('✅ Products:', data);
-                updateDomForRoute('/public/products', data);
-            }).catch(err => console.warn('❌ /public/products (fallback) failed', err));
+        console.warn('API demo failed – using hard-coded fallbacks', err);
 
-        tryProxy('/public/categories', { headers: { 'Accept': 'application/json' } })
-            .then(res => res.ok ? res.json() : Promise.reject(res))
-            .then(data => {
-                console.log('✅ Categories:', data);
-                updateDomForRoute('/public/categories', data);
-            }).catch(err => console.warn('❌ /public/categories (fallback) failed', err));
-
-        tryProxy('/public/products/101', { headers: { 'Accept': 'application/json' } })
-            .then(res => res.ok ? res.json() : Promise.reject(res))
-            .then(data => {
-                console.log('✅ Product Detail:', data);
-                updateDomForRoute('/public/products/101', data);
-            }).catch(err => console.warn('❌ /public/products/101 (fallback) failed', err));
-
-        tryProxy('/public/prices?product_id=101', { headers: { 'Accept': 'application/json' } })
-            .then(res => res.ok ? res.json() : Promise.reject(res))
-            .then(data => {
-                console.log('✅ Prices:', data);
-                updateDomForRoute('/public/prices', data);
-            }).catch(err => console.warn('❌ /public/prices (fallback) failed', err));
-
-        tryProxy('/public/price-categories', { headers: { 'Accept': 'application/json' } })
-            .then(res => res.ok ? res.json() : Promise.reject(res))
-            .then(data => {
-                console.log('✅ Price Categories:', data);
-                updateDomForRoute('/public/price-categories', data);
-            }).catch(err => console.warn('❌ /public/price-categories (fallback) failed', err));
-
-        tryProxy('/public/images?per_page=10', { headers: { 'Accept': 'application/json' } })
-            .then(res => res.ok ? res.json() : Promise.reject(res))
-            .then(data => {
-                console.log('✅ Images:', data);
-                updateDomForRoute('/public/images', data);
-            }).catch(err => console.warn('❌ /public/images (fallback) failed', err));
-    }
-}
-
-document.addEventListener("DOMContentLoaded", setupPublicAPIExamples);
-
-function searchProduct() {
-    const input = document.getElementById("searchInput").value.toLowerCase();
-    const resultsContainer = document.getElementById("productResults");
-    resultsContainer.innerHTML = ""; // clear previous results
-
-    // filter matching products
-    const filtered = products.filter(p => p.name.toLowerCase().includes(input));
-
-    if (filtered.length > 0) {
-        filtered.forEach(p => {
-            const card = document.createElement("div");
-            card.className = "product-card";
-            card.innerHTML = `
-        <img src="${p.image}" alt="${p.name}">
-        <h3>${p.name}</h3>
-        <p>${p.class}</p>
-      `;
-            resultsContainer.appendChild(card);
-        });
-    } else {
-        resultsContainer.innerHTML = `<p>No product found</p>`;
-    }
-}
-
-// Carousel rotation
-let currentIndex = 0;
-setInterval(() => {
-    const items = document.querySelectorAll(".carousel-item");
-    if (items.length === 0) return;
-    items[currentIndex].classList.remove("active");
-    currentIndex = (currentIndex + 1) % items.length;
-    items[currentIndex].classList.add("active");
-}, 3000);
-
-// Smooth header scrolled toggle: add/remove `scrolled` class when user scrolls past threshold
-(function addHeaderScrollListener() {
-    // safe guard: run after DOM is ready
-    function install() {
-        const header = document.querySelector('header');
-        if (!header) return;
-        const onScroll = () => {
+        // ---- Hard-coded fallback examples (same as original) ----
+        const fallback = async (path, qs = '') => {
             try {
-                if (window.scrollY > 50) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
-            } catch (e) {
-                // defensive: ignore errors
-            }
+                const res = await proxyFetch(path + qs);
+                if (res.ok) render(path, await res.json());
+            } catch (_) {}
         };
-        // initial state
-        onScroll();
-        window.addEventListener('scroll', onScroll, { passive: true });
-    }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', install);
-    } else {
-        install();
+        await Promise.allSettled([
+            fallback('/public/products', '?per_page=5&q=phone&sort=price&direction=asc'),
+            fallback('/public/categories'),
+            fallback('/public/products/101'),
+            fallback('/public/prices', '?product_id=101'),
+            fallback('/public/price-categories'),
+            fallback('/public/images', '?per_page=10')
+        ]);
     }
 })();
+
+/* --------------------------------------------------------------
+   7. EXPOSE TAB FUNCTION GLOBALLY (for inline onclick)
+   -------------------------------------------------------------- */
+window.openTab = openTab;
