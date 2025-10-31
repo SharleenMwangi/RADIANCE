@@ -282,26 +282,99 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
         console.warn('API demo failed – using hard-coded fallbacks', err);
 
-        // ---- Hard-coded fallback examples (same as original) ----
-        const fallback = async (path, qs = '') => {
-            try {
-                const res = await proxyFetch(path + qs);
-                if (res.ok) render(path, await res.json());
-            } catch (_) {}
-        };
+document.addEventListener("DOMContentLoaded", setupPublicAPIExamples);
 
-        await Promise.allSettled([
-            fallback('/public/products', '?per_page=5&q=phone&sort=price&direction=asc'),
-            fallback('/public/categories'),
-            fallback('/public/products/101'),
-            fallback('/public/prices', '?product_id=101'),
-            fallback('/public/price-categories'),
-            fallback('/public/images', '?per_page=10')
-        ]);
+function searchProduct() {
+    const input = document.getElementById("searchInput").value.toLowerCase();
+    const resultsContainer = document.getElementById("productResults");
+    resultsContainer.innerHTML = ""; // clear previous results
+
+    // filter matching products
+    const filtered = products.filter(p => p.name.toLowerCase().includes(input));
+
+    if (filtered.length > 0) {
+        filtered.forEach(p => {
+            const card = document.createElement("div");
+            card.className = "product-card";
+            card.innerHTML = `
+        <img src="${p.image}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <p>${p.class}</p>
+      `;
+            resultsContainer.appendChild(card);
+        });
+    } else {
+        resultsContainer.innerHTML = `<p>No product found</p>`;
     }
-})();
+}
 
-/* --------------------------------------------------------------
-   7. EXPOSE TAB FUNCTION GLOBALLY (for inline onclick)
-   -------------------------------------------------------------- */
-window.openTab = openTab;
+// Carousel rotation
+let currentIndex = 0;
+setInterval(() => {
+    const items = document.querySelectorAll(".carousel-item");
+    if (items.length === 0) return;
+    items[currentIndex].classList.remove("active");
+    currentIndex = (currentIndex + 1) % items.length;
+    items[currentIndex].classList.add("active");
+}, 3000);
+
+// Smooth header scrolled toggle: add/remove `scrolled` class and shrink logo when user scrolls past threshold
+// (function addHeaderScrollListener() {
+//     function install() {
+//         const header = document.querySelector('header');
+//         const logo = header ? header.querySelector('.logo, .site-logo, img') : null;
+//         let lastScrolled = null;
+//         let ticking = false;
+//         const threshold = 50;
+
+//         function updateHeader() {
+//             const scrolled = window.scrollY > threshold;
+//             if (scrolled !== lastScrolled) {
+//                 lastScrolled = scrolled;
+//                 if (header) {
+//                     header.classList.toggle('scrolled', scrolled);
+//                 }
+//                 if (logo) {
+//                     logo.style.transition = 'all 0.3s cubic-bezier(.4,0,.2,1)';
+//                     logo.style.height = scrolled ? '24px' : '56px';
+//                     logo.style.maxWidth = scrolled ? '100px' : '200px';
+//                 }
+//             }
+//             ticking = false;
+//         }
+
+//         function onScroll() {
+//             if (!ticking) {
+//                 window.requestAnimationFrame(updateHeader);
+//                 ticking = true;
+//             }
+//         }
+
+//         // initial state
+//         updateHeader();
+//         window.addEventListener('scroll', onScroll, { passive: true });
+//     }
+
+//     if (document.readyState === 'loading') {
+//         document.addEventListener('DOMContentLoaded', install);
+//     } else {
+//         install();
+//     }
+// })();
+
+const hamburger = document.querySelector('.hamburger');
+const nav = document.getElementById('main-nav');
+
+hamburger.addEventListener('click', () => {
+  const expanded = hamburger.getAttribute('aria-expanded') === 'true';
+  hamburger.setAttribute('aria-expanded', !expanded);
+  nav.classList.toggle('show');
+});
+
+// ✅ Optional: Mobile dropdown tap behavior
+document.querySelectorAll('.dropbtn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    btn.classList.toggle('active');
+  });
+});

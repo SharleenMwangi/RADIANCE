@@ -233,34 +233,16 @@ function renderHome(filter = '') {
     section.innerHTML = cards;
 }
 
-/* --------------------------------------------------------------
-   7. POPULATE CATEGORY PILLS (HOME)
-   -------------------------------------------------------------- */
-function populateHomeCategories() {
-    if (!STATE.isHome) return;
-    const filter = $('#categoryFilter');
-    if (!filter) return;
-
-    const cats = ['all', ...new Set(STATE.allProducts.map(p => p.class))].sort();
-    filter.innerHTML = cats.map(c => `
-        <button class="category-pill ${c === 'all' ? 'active' : ''}" data-cat="${c}">
-            ${c === 'all' ? 'All' : c}
-        </button>
-    `).join('');
-
-    filter.addEventListener('click', e => {
-        const pill = e.target.closest('.category-pill');
-        if (!pill) return;
-        filter.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-        const cat = pill.dataset.cat;
-        const filtered = cat === 'all' ? STATE.allProducts : STATE.allProducts.filter(p => p.class === cat);
-        const temp = STATE.allProducts;
-        STATE.allProducts = filtered;
-        renderHome($('#searchInput')?.value || '');
-        STATE.allProducts = temp;
-    });
-}
+            const carouselItems = filteredProducts.slice(0, 10).map((d, index) => {
+                const color = classColors[d.class] || '#94a3b8';
+                const img = (d.image_urls && d.image_urls[0]) ? d.image_urls[0] : svgPlaceholder((d.trade || '').split(' ')[0], color);
+                return `<div class="carousel-item container  ${index === 0 ? 'active' : ''}">
+                    <img src="${img}" alt="${d.trade}">
+                    <p><strong>${d.trade}</strong><br>${d.generic} ${d.strength}</p>
+                </div>`;
+            }).join('');
+            section.innerHTML = `<div class="product-search-container">${carouselItems}</div>`;
+        }
 
 /* --------------------------------------------------------------
    8. ALPHABET NAVIGATION (CATALOG)
