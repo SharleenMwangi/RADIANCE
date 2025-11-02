@@ -12,6 +12,7 @@ const STATE = {
     allProducts: [],
     categoryMap: {},
     classColors: {},
+    groupBy: 'trade', // 'trade', 'therapeutic', 'generic'
 };
 
 /* --------------------------------------------------------------
@@ -151,19 +152,29 @@ function renderCatalog(filter = '') {
         const fields = [p.generic, p.trade, p.strength, p.class].map(s => (s || '').toLowerCase());
         if (low && !fields.some(f => f.includes(low))) return;
 
-        const letter = (p.trade?.[0] || '').toUpperCase();
-        if (!map[letter]) map[letter] = [];
-        map[letter].push(p);
+        let groupKey;
+        if (STATE.groupBy === 'trade') groupKey = (p.trade?.[0] || '').toUpperCase();
+        else if (STATE.groupBy === 'therapeutic') groupKey = p.class;
+        else if (STATE.groupBy === 'generic') groupKey = (p.generic?.[0] || '').toUpperCase();
+        else groupKey = (p.trade?.[0] || '').toUpperCase(); // default
+
+        if (!map[groupKey]) map[groupKey] = [];
+        map[groupKey].push(p);
     });
 
-    const letters = Object.keys(map).sort();
-    if (!letters.length) {
+    const groupKeys = Object.keys(map).sort();
+    if (!groupKeys.length) {
         section.innerHTML = '<p style="text-align:center;color:#64748b;font-size:1.1rem;">No products found.</p>';
         return;
     }
 
-    letters.forEach(letter => {
-        const items = map[letter].sort((a, b) => a.trade.localeCompare(b.trade));
+    groupKeys.forEach(groupKey => {
+        const items = map[groupKey].sort((a, b) => {
+            if (STATE.groupBy === 'trade') return a.trade.localeCompare(b.trade);
+            else if (STATE.groupBy === 'therapeutic') return a.class.localeCompare(b.class) || a.trade.localeCompare(b.trade);
+            else if (STATE.groupBy === 'generic') return a.generic.localeCompare(b.generic) || a.trade.localeCompare(b.trade);
+            return a.trade.localeCompare(b.trade);
+        });
         const cards = items.map(p => {
             const color = STATE.classColors[p.class] || '#94a3b8';
             const img = p.image_urls[0] || svgPlaceholder(p.trade.split(' ')[0], color);
@@ -173,14 +184,13 @@ function renderCatalog(filter = '') {
                     <span class="tag" style="background:${color}">${p.class}</span>
                     <h4 class="name">${p.trade}</h4>
                     <p class="strength">${p.generic} — ${p.strength}</p>
-                    <p class="price">Trade: <strong>KSh ${fmt(p.tradePrice)}</strong><br>Retail: <strong>${p.retailPrice ? `KSh ${fmt(p.retailPrice)}` : 'NETT'}</strong></p>
                 </div>
             </div>`;
         }).join('');
 
         section.insertAdjacentHTML('beforeend', `
-            <div class="group" id="${encodeURIComponent(letter)}">
-                <h2>${letter}</h2>
+            <div class="group" id="${encodeURIComponent(groupKey)}">
+                <h2>${groupKey}</h2>
                 <div class="grid">${cards}</div>
             </div>
         `);
@@ -237,14 +247,27 @@ function renderHome(filter = '') {
    7. POPULATE CATEGORY PILLS (HOME)
    -------------------------------------------------------------- */
 function populateHomeCategories() {
-    if (!STATE.isHome) return;
+    if (!STATE.isHome && !STATE.isCatalog) return;
     const filter = $('#categoryFilter');
     if (!filter) return;
 
-    const cats = ['all', ...new Set(STATE.allProducts.map(p => p.class))].sort();
+    let cats;
+    if (STATE.isCatalog) {
+        // For catalog, use groupings
+        cats = [
+            { name: 'All', value: 'all' },
+            { name: 'Therapeutic Class', value: 'therapeutic' },
+            { name: 'Trade Name', value: 'trade' },
+            { name: 'Generic Class', value: 'generic' }
+        ];
+    } else {
+        // For home, use categories
+        cats = ['all', ...new Set(STATE.allProducts.map(p => p.class))].sort().map(c => ({ name: c === 'all' ? 'All' : c, value: c }));
+    }
+
     filter.innerHTML = cats.map(c => `
-        <button class="category-pill ${c === 'all' ? 'active' : ''}" data-cat="${c}">
-            ${c === 'all' ? 'All' : c}
+        <button class="category-pill ${c.value === 'all' ? 'active' : ''}" data-category="${c.value}">
+            ${c.name}
         </button>
     `).join('');
 
@@ -253,12 +276,24 @@ function populateHomeCategories() {
         if (!pill) return;
         filter.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
         pill.classList.add('active');
-        const cat = pill.dataset.cat;
-        const filtered = cat === 'all' ? STATE.allProducts : STATE.allProducts.filter(p => p.class === cat);
-        const temp = STATE.allProducts;
-        STATE.allProducts = filtered;
-        renderHome($('#searchInput')?.value || '');
-        STATE.allProducts = temp;
+        const cat = pill.dataset.category;
+
+        if (STATE.isCatalog) {
+            if (cat === 'all') {
+                STATE.groupBy = 'trade'; // default
+            } else {
+                STATE.groupBy = cat;
+            }
+            buildAlphaNav();
+            renderCatalog($('#searchInput')?.value || '');
+        } else {
+            // Home logic
+            const filtered = cat === 'all' ? STATE.allProducts : STATE.allProducts.filter(p => p.class === cat);
+            const temp = STATE.allProducts;
+            STATE.allProducts = filtered;
+            renderHome($('#searchInput')?.value || '');
+            STATE.allProducts = temp;
+        }
     });
 }
 
@@ -270,15 +305,21 @@ function buildAlphaNav() {
     const el = $('#alpha');
     if (!el) return;
 
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-    const available = new Set(STATE.allProducts.map(p => (p.trade?.[0] || '').toUpperCase()).filter(Boolean));
+    let navItems = [];
+    if (STATE.groupBy === 'trade') {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        const available = new Set(STATE.allProducts.map(p => (p.trade?.[0] || '').toUpperCase()).filter(Boolean));
+        navItems = letters.map(L => available.has(L) ? `<a href="#${encodeURIComponent(L)}">${L}</a>` : `<span class="inactive">${L}</span>`);
+    } else if (STATE.groupBy === 'therapeutic') {
+        const available = [...new Set(STATE.allProducts.map(p => p.class).filter(Boolean))].sort();
+        navItems = available.map(c => `<a href="#${encodeURIComponent(c)}">${c}</a>`);
+    } else if (STATE.groupBy === 'generic') {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        const available = new Set(STATE.allProducts.map(p => (p.generic?.[0] || '').toUpperCase()).filter(Boolean));
+        navItems = letters.map(L => available.has(L) ? `<a href="#${encodeURIComponent(L)}">${L}</a>` : `<span class="inactive">${L}</span>`);
+    }
 
-    el.innerHTML = letters.map(L => {
-        if (available.has(L)) {
-            return `<a href="#${encodeURIComponent(L)}">${L}</a>`;
-        }
-        return `<span class="inactive">${L}</span>`;
-    }).join('');
+    el.innerHTML = navItems.join('');
 }
 
 /* --------------------------------------------------------------
@@ -288,29 +329,16 @@ async function populateMenus() {
     const dd = $('#dd-categories');
     if (!dd) return;
 
-    // Prefer API
-    try {
-        const res = await proxyFetch('/public/categories');
-        if (res.ok) {
-            const data = await res.json();
-            const cats = Array.isArray(data) ? data : data.categories || [];
-            if (cats.length) {
-                dd.innerHTML = cats.map(c => {
-                    const id = c.id ?? '';
-                    const name = (c.name || c.category_name || c.title || 'Uncategorized');
-                    const href = STATE.isCatalog ? '#' : `catalogue.html?category_id=${id}`;
-                    return `<a href="${href}" data-cat-id="${id}" data-cat-name="${name}">${name}</a>`;
-                }).join('');
-                return;
-            }
-        }
-    } catch (_) { /* fall through */ }
+    // Three main groupings
+    const groupings = [
+        { name: 'Therapeutic Class', group: 'therapeutic' },
+        { name: 'Trade Name', group: 'trade' },
+        { name: 'Generic Class', group: 'generic' }
+    ];
 
-    // Fallback: unique classes
-    const classes = [...new Set(STATE.allProducts.map(p => p.class).filter(Boolean))].sort();
-    dd.innerHTML = classes.map(c => {
-        const href = STATE.isCatalog ? '#' : `catalogue.html?category_name=${encodeURIComponent(c)}`;
-        return `<a href="${href}" data-cat-class="${c}" data-cat-name="${c}">${c}</a>`;
+    dd.innerHTML = groupings.map(item => {
+        const href = STATE.isCatalog ? '#' : `catalogue.html?group=${item.group}`;
+        return `<a href="${href}" data-group="${item.group}">${item.name}</a>`;
     }).join('');
 }
 
@@ -358,10 +386,14 @@ function showCategory({ id, name, className, all } = {}) {
     }, 50);
 }
 
-function showLetter(letter) {
-    if (!STATE.isCatalog || !letter) return search('');
-    const L = letter.toUpperCase();
-    const filtered = STATE.allProducts.filter(p => (p.trade?.[0] || '').toUpperCase() === L);
+function showGroup(groupKey) {
+    if (!STATE.isCatalog || !groupKey) return search('');
+    const filtered = STATE.allProducts.filter(p => {
+        if (STATE.groupBy === 'trade') return (p.trade?.[0] || '').toUpperCase() === groupKey;
+        else if (STATE.groupBy === 'therapeutic') return p.class === groupKey;
+        else if (STATE.groupBy === 'generic') return (p.generic?.[0] || '').toUpperCase() === groupKey;
+        return false;
+    });
     const temp = STATE.allProducts;
     STATE.allProducts = filtered;
     renderCatalog('');
@@ -381,8 +413,8 @@ function bindEvents() {
         const a = e.target.closest('a');
         if (!a) return;
         e.preventDefault();
-        const letter = decodeURIComponent(a.getAttribute('href').slice(1));
-        showLetter(letter);
+        const groupKey = decodeURIComponent(a.getAttribute('href').slice(1));
+        showGroup(groupKey);
     });
 
     // Dropdown categories
@@ -391,19 +423,16 @@ function bindEvents() {
         if (!a) return;
         e.preventDefault();
 
-        const id = a.dataset.catId;
-        const name = a.dataset.catName;
-        const className = a.dataset.catClass;
-        const all = a.dataset.catAll;
+        const group = a.dataset.group;
 
         if (!STATE.isCatalog) {
-            if (all) location.href = 'catalogue.html';
-            else if (id) location.href = `catalogue.html?category_id=${id}`;
-            else if (className) location.href = `catalogue.html?category_name=${encodeURIComponent(className)}`;
+            location.href = `catalogue.html?group=${group}`;
             return;
         }
 
-        showCategory({ id, name, className, all: !!all });
+        STATE.groupBy = group;
+        buildAlphaNav();
+        renderCatalog('');
     });
 
     // Category list (home)
@@ -417,6 +446,8 @@ function bindEvents() {
         const params = new URLSearchParams(location.search);
         const catId = params.get('category_id');
         const catName = params.get('category_name');
+        const group = params.get('group');
+        if (group) STATE.groupBy = group;
         if (catId || catName) {
             showCategory({ id: catId, className: catName });
         }
@@ -456,11 +487,21 @@ async function init() {
     try {
         await loadData();
         await populateMenus();
-        if (STATE.isHome) {
+        if (STATE.isHome || STATE.isCatalog) {
             populateCategoryList();
             populateHomeCategories(); // New: category pills
         }
-        if (STATE.isCatalog) buildAlphaNav();
+        if (STATE.isCatalog) {
+            const params = new URLSearchParams(location.search);
+            const catId = params.get('category_id');
+            const catName = params.get('category_name');
+            const group = params.get('group');
+            if (group) STATE.groupBy = group;
+            if (catId || catName) {
+                showCategory({ id: catId, className: catName });
+            }
+            buildAlphaNav();
+        }
 
         // Initial render
         search('');

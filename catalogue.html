@@ -48,9 +48,18 @@
             <h1>Products by Trade Name</h1>
             <p>Explore our pharmaceutical products, organized by trade name for easy browsing.</p>
         </div> -->
-        <div class="toolbar">
-            <input type="text" class="search-input" id="searchInput" placeholder="Search by trade name, generic, or strength..." />
-            <a href="index.html" class="btn-back">Back to Home</a>
+        <div class="product-controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by trade name, generic, or strength..." aria-label="Search products" />
+                <button type="button" id="searchBtn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+
+            <div class="category-filter" id="categoryFilter">
+                <button class="category-pill active" data-category="all">All</button>
+                <!-- Filled by JS -->
+            </div>
         </div>
         <div class="hint">Select a letter to jump to products starting with that letter.</div>
         <nav class="alpha" id="alpha"></nav>

@@ -4,20 +4,31 @@
    ============================================================== */
 
 /* --------------------------------------------------------------
-   1. TAB SWITCHING (Vision / Mission)
+   1. TAB SWITCHING – GUARANTEED TO WORK
    -------------------------------------------------------------- */
 function openTab(evt, tabName) {
+    const tab = document.getElementById(tabName);
+    const link = evt.currentTarget;
+
+    if (!tab || !link) {
+        console.warn('Tab not found:', tabName);
+        return;
+    }
+
     // Remove active classes
     document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active-link'));
     document.querySelectorAll('.tab-contents').forEach(c => c.classList.remove('active-tab'));
 
-    // Activate selected tab
-    document.getElementById(tabName).classList.add('active-tab');
-    evt.currentTarget.classList.add('active-link');
+    // Add active
+    tab.classList.add('active-tab');
+    link.classList.add('active-link');
 }
 
+// EXPOSE IMMEDIATELY – BEFORE ANY OTHER CODE
+window.openTab = openTab;
+
 /* --------------------------------------------------------------
-   2. MOBILE MENU TOGGLE
+   2. MOBILE MENU TOGGLE – Safe & UX-friendly
    -------------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.querySelector('.nav-toggle');
@@ -28,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             header.classList.toggle('nav-open');
         });
 
-        // Close when clicking a link (nice UX)
+        // Close menu when clicking nav links
         document.querySelectorAll('nav a').forEach(link => {
             link.addEventListener('click', () => {
                 header.classList.remove('nav-open');
@@ -38,22 +49,29 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* --------------------------------------------------------------
-   3. HEADER SCROLL EFFECT
+   3. HEADER SCROLL EFFECT – Efficient & Passive
    -------------------------------------------------------------- */
 (function headerScroll() {
     const header = document.querySelector('header');
     if (!header) return;
 
+    let ticking = false;
     const onScroll = () => {
-        header.classList.toggle('scrolled', window.scrollY > 50);
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                header.classList.toggle('scrolled', window.scrollY > 50);
+                ticking = false;
+            });
+            ticking = true;
+        }
     };
 
-    onScroll();                     // initial check
+    onScroll(); // Initial check
     window.addEventListener('scroll', onScroll, { passive: true });
 })();
 
 /* --------------------------------------------------------------
-   4. REUSABLE CAROUSEL (partners, clients, hero, about, delivery)
+   4. REUSABLE CAROUSEL – Enhanced with touch & accessibility
    -------------------------------------------------------------- */
 class SimpleCarousel {
     constructor(containerSel, options = {}) {
@@ -66,6 +84,8 @@ class SimpleCarousel {
         this.idx = 0;
         this.auto = options.auto ?? true;
         this.interval = options.interval ?? 4000;
+        this.touchStartX = 0;
+        this.touchEndX = 0;
 
         this.init();
     }
@@ -75,23 +95,25 @@ class SimpleCarousel {
 
         this.showSlide(this.idx);
         this.bindButtons();
+        this.bindTouch();
         if (this.auto) this.startAuto();
     }
 
     showSlide(n) {
+        this.idx = (n + this.slides.length) % this.slides.length;
         this.slides.forEach((s, i) => {
-            s.style.transform = `translateX(${(i - n) * 100}%)`;
+            s.style.transform = `translateX(${(i - this.idx) * 100}%)`;
         });
     }
 
     next() {
-        this.idx = (this.idx + 1) % this.slides.length;
-        this.showSlide(this.idx);
+        this.showSlide(this.idx + 1);
+        this.resetAuto();
     }
 
     prev() {
-        this.idx = (this.idx - 1 + this.slides.length) % this.slides.length;
-        this.showSlide(this.idx);
+        this.showSlide(this.idx - 1);
+        this.resetAuto();
     }
 
     bindButtons() {
@@ -99,149 +121,177 @@ class SimpleCarousel {
         if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.prev());
     }
 
+    bindTouch() {
+        this.container.addEventListener('touchstart', e => {
+            this.touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        this.container.addEventListener('touchend', e => {
+            this.touchEndX = e.changedTouches[0].screenX;
+            this.handleSwipe();
+        }, { passive: true });
+    }
+
+    handleSwipe() {
+        const diff = this.touchStartX - this.touchEndX;
+        if (Math.abs(diff) > 50) { // Minimum swipe distance
+            diff > 0 ? this.next() : this.prev();
+        }
+    }
+
     startAuto() {
         this.timer = setInterval(() => this.next(), this.interval);
         this.container.addEventListener('mouseenter', () => clearInterval(this.timer));
-        this.container.addEventListener('mouseleave', () => this.timer = setInterval(() => this.next(), this.interval));
+        this.container.addEventListener('mouseleave', () => this.startAuto());
+    }
+
+    resetAuto() {
+        if (this.auto && this.timer) {
+            clearInterval(this.timer);
+            this.startAuto();
+        }
     }
 }
 
 /* Initialise all carousels */
 document.addEventListener('DOMContentLoaded', () => {
-    // Hero / About / Delivery carousels
-    document.querySelectorAll('.carousel').forEach(el => new SimpleCarousel(el, { auto: true }));
+    document.querySelectorAll('.carousel').forEach(el => 
+        new SimpleCarousel(el, { auto: true })
+    );
 
-    // Partners / Clients infinite scroll (duplicate content for seamless loop)
+    // Infinite scroll for partners/clients
     ['.partners-carousel', '.clients-carousel'].forEach(sel => {
         const el = document.querySelector(sel);
-        if (el) el.innerHTML += el.innerHTML; // duplicate for loop
+        if (el && el.children.length > 0) {
+            el.innerHTML += el.innerHTML; // Duplicate for seamless loop
+        }
     });
 });
 
 /* --------------------------------------------------------------
-   5. PRODUCT SEARCH (static fallback)
+   5. PRODUCT SEARCH – Static fallback with debouncing
    -------------------------------------------------------------- */
-const products = [
-    // ← paste your full product array here (or load via API)
-];
+const products = [];
 
+let searchTimeout;
 function searchProduct() {
-    const input = (document.getElementById('searchInput')?.value ?? '').toLowerCase().trim();
-    const container = document.getElementById('productResults');
-    if (!container) return;
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        const input = (document.getElementById('searchInput')?.value ?? '').toLowerCase().trim();
+        const container = document.getElementById('productResults');
+        if (!container) return;
 
-    container.innerHTML = '';
+        container.innerHTML = '';
 
-    if (!input) {
-        container.innerHTML = '<p>Type a product name to search.</p>';
-        return;
-    }
+        if (!input) {
+            container.innerHTML = '<p class="text-muted">Type a product name to search.</p>';
+            return;
+        }
 
-    const matches = products.filter(p => p.name.toLowerCase().includes(input));
+        const matches = products.filter(p => 
+            p.name?.toLowerCase().includes(input) || 
+            p.class?.toLowerCase().includes(input)
+        );
 
-    if (matches.length) {
-        matches.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.innerHTML = `
-                <img src="${p.image}" alt="${p.name}" loading="lazy">
-                <h3>${p.name}</h3>
-                <p>${p.class || ''}</p>
-            `;
-            container.appendChild(card);
-        });
-    } else {
-        container.innerHTML = '<p>No product found.</p>';
-    }
+        if (matches.length) {
+            matches.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${p.image || 'placeholder.jpg'}" alt="${p.name}" loading="lazy" onerror="this.src='placeholder.jpg'">
+                    <h3>${p.name}</h3>
+                    <p>${p.class || ''}</p>
+                `;
+                container.appendChild(card);
+            });
+        } else {
+            container.innerHTML = '<p class="text-muted">No product found.</p>';
+        }
+    }, 300); // Debounce
 }
 
-/* Bind search on Enter or button click */
+/* Bind search */
 document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('searchInput');
     const btn = document.querySelector('.search-box button');
-    if (input) input.addEventListener('keypress', e => e.key === 'Enter' && searchProduct());
+
+    if (input) {
+        input.addEventListener('input', searchProduct);
+        input.addEventListener('keypress', e => e.key === 'Enter' && searchProduct());
+    }
     if (btn) btn.addEventListener('click', searchProduct);
 });
 
 /* --------------------------------------------------------------
-   6. PUBLIC API DEMO (discover routes, fill placeholders)
+   6. PUBLIC API DEMO – Safer & more resilient
    -------------------------------------------------------------- */
 (async function setupPublicAPIExamples() {
-    // Global promise for other pages that need the product list
     if (!window.publicProductsReady) {
         window.publicProductsReady = new Promise(res => { window.__resolvePublicProducts = res; });
     }
 
-    const apiBaseMeta = document.querySelector('meta[name="public-api-base"]');
-    const apiBase = apiBaseMeta ? apiBaseMeta.content.replace(/\/+$/, '') : 'http://localhost:5000';
+    const apiBase = (document.querySelector('meta[name="public-api-base"]')?.content || 'http://localhost:5000').replace(/\/+$/, '');
 
-    /** Helper – fetch via server proxy (injects tenant/key) */
     async function proxyFetch(path, opts = {}) {
         const url = '/proxy' + (path.startsWith('/') ? path : '/' + path);
         const headers = { ...opts.headers, Accept: 'application/json' };
 
-        // Tenant / public key injection (server-side fallback still works)
         const tenant = document.querySelector('meta[name="public-tenant"]')?.content;
         const pubKey = document.querySelector('meta[name="public-api-key"]')?.content;
         if (tenant) headers['X-Tenant'] = tenant;
         if (pubKey) headers['X-API-Key'] = pubKey;
 
-        return fetch(url, { ...opts, headers, credentials: 'same-origin' });
+        try {
+            return await fetch(url, { ...opts, headers, credentials: 'same-origin' });
+        } catch (err) {
+            console.warn('Fetch failed:', err);
+            return new Response(null, { status: 0 });
+        }
     }
 
-    /** Render API response into the correct placeholder */
     function render(path, data) {
         const map = {
-            '/public/products': () => {
-                const el = document.getElementById('productsList');
-                if (!el || !data?.products) return;
-                el.innerHTML = `<h3>Products</h3><ul>${data.products.map(p => `<li>${p.name} (${p.price ?? ''})</li>`).join('')}</ul>`;
-            },
-            '/public/categories': () => {
-                const el = document.getElementById('categoryList');
-                const cats = Array.isArray(data) ? data : data?.categories || [];
-                if (!el || !cats.length) return;
-                el.innerHTML = `<h3>Product Categories</h3><ul>${cats.map(c => `<li>${c.name}</li>`).join('')}</ul>`;
-            },
-            // product detail (dynamic id)
+            '/public/products': () => renderList('productsList', data?.products, p => `<li>${p.name} (${p.price ?? ''})</li>`),
+            '/public/categories': () => renderList('categoryList', data?.categories || data, c => `<li>${c.name}</li>`),
             /^\/public\/products\/\d+$/: () => {
                 const el = document.getElementById('productDetail');
-                if (!el || !data?.name) return;
-                el.innerHTML = `<h3>${data.name}</h3><p>${data.description || ''}</p>`;
+                if (el && data?.name) el.innerHTML = `<h3>${data.name}</h3><p>${data.description || ''}</p>`;
             },
-            '/public/prices': () => {
-                const el = document.getElementById('pricesList');
-                if (!el || !Array.isArray(data)) return;
-                el.innerHTML = `<h3>Prices</h3><ul>${data.map(p => `<li>${p.price_type}: ${p.value} ${p.currency}</li>`).join('')}</ul>`;
-            },
-            '/public/price-categories': () => {
-                const el = document.getElementById('priceCategoriesList');
-                if (!el || !Array.isArray(data)) return;
-                el.innerHTML = `<h3>Price Categories</h3><ul>${data.map(c => `<li>${c.name}: Trade ${c.tradePrice}, Retail ${c.retailPrice}</li>`).join('')}</ul>`;
-            },
+            '/public/prices': () => renderList('pricesList', data, p => `<li>${p.price_type}: ${p.value} ${p.currency}</li>`),
+            '/public/price-categories': () => renderList('priceCategoriesList', data, c => `<li>${c.name}: Trade ${c.tradePrice}, Retail ${c.retailPrice}</li>`),
             '/public/images': () => {
                 const el = document.getElementById('imagesList');
-                const imgs = Array.isArray(data) ? data : data?.images || [];
-                if (!el || !imgs.length) return;
-                el.innerHTML = `<h3>Images</h3><ul>${imgs.map(i => `<li>${i.name}: <img src="${i.url}" alt="${i.name}" style="height:40px"></li>`).join('')}</ul>`;
+                const imgs = data?.images || data || [];
+                if (el && imgs.length) {
+                    el.innerHTML = `<h3>Images</h3><ul>${imgs.map(i => `<li>${i.name}: <img src="${i.url}" alt="${i.name}" style="height:40px"></li>`).join('')}</ul>`;
+                }
             },
         };
 
+        function renderList(id, items, formatter) {
+            const el = document.getElementById(id);
+            if (el && Array.isArray(items) && items.length) {
+                el.innerHTML = `<h3>${id.replace('List', '')}</h3><ul>${items.map(formatter).join('')}</ul>`;
+            }
+        }
+
         for (const [pattern, fn] of Object.entries(map)) {
-            if (typeof pattern === 'string' && pattern === path) { fn(); return; }
-            if (pattern instanceof RegExp && pattern.test(path)) { fn(); return; }
+            if ((typeof pattern === 'string' && pattern === path) || 
+                (pattern instanceof RegExp && pattern.test(path))) {
+                fn();
+                return;
+            }
         }
     }
 
     try {
-        // Load route documentation
         const routesRes = await fetch('/static/data/public_routes.json');
-        if (!routesRes.ok) throw new Error('routes file missing');
-        const { routes = [] } = await routesRes.json();
+        if (!routesRes.ok) throw new Error('Routes file missing');
 
+        const { routes = [] } = await routesRes.json();
         let discoveredProducts = null;
 
-        // 1. Discover real product IDs
+        // Discover products
         const prodRoute = routes.find(r => r.path === '/public/products');
         if (prodRoute) {
             const qs = prodRoute.request?.query ? '?' + new URLSearchParams(prodRoute.request.query) : '';
@@ -252,37 +302,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Resolve global promise
         if (window.__resolvePublicProducts) window.__resolvePublicProducts(discoveredProducts);
 
-        // 2. Call every documented route
+        // Call all routes
         for (const r of routes) {
-            // Routes that need a real product id
             if (r.path.includes('<int:product_id>')) {
                 const ids = discoveredProducts?.products?.map(p => p.id).filter(Boolean) ?? [];
                 if (!ids.length) continue;
-
-                const sampleIds = ids.slice(0, 3); // limit to 3 calls
-                for (const id of sampleIds) {
+                for (const id of ids.slice(0, 3)) {
                     const url = r.path.replace(/<int:product_id>/g, id);
                     const qs = r.request?.query ? '?' + new URLSearchParams(r.request.query) : '';
                     const res = await proxyFetch(url + qs);
-                    const data = res.ok ? await res.json().catch(() => null) : null;
-                    render(url, data);
+                    if (res.ok) render(url, await res.json().catch(() => null));
                 }
-                continue;
+            } else {
+                const qs = r.request?.query ? '?' + new URLSearchParams(r.request.query) : '';
+                const res = await proxyFetch(r.path + qs);
+                if (res.ok) render(r.path, await res.json().catch(() => null));
             }
-
-            // Normal route
-            const qs = r.request?.query ? '?' + new URLSearchParams(r.request.query) : '';
-            const res = await proxyFetch(r.path + qs);
-            const data = res.ok ? await res.json().catch(() => null) : null;
-            render(r.path, data);
         }
     } catch (err) {
-        console.warn('API demo failed – using hard-coded fallbacks', err);
+        console.warn('API demo failed, using fallbacks:', err);
 
-        // ---- Hard-coded fallback examples (same as original) ----
         const fallback = async (path, qs = '') => {
             try {
                 const res = await proxyFetch(path + qs);
@@ -291,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         await Promise.allSettled([
-            fallback('/public/products', '?per_page=5&q=phone&sort=price&direction=asc'),
+            fallback('/public/products', '?per_page=5&q=phone'),
             fallback('/public/categories'),
             fallback('/public/products/101'),
             fallback('/public/prices', '?product_id=101'),
@@ -302,6 +343,11 @@ document.addEventListener('DOMContentLoaded', () => {
 })();
 
 /* --------------------------------------------------------------
-   7. EXPOSE TAB FUNCTION GLOBALLY (for inline onclick)
+   7. CSS TO ENSURE TABS WORK (Add this to your CSS file!)
    -------------------------------------------------------------- */
-window.openTab = openTab;
+/*
+.tab-contents { display: none; }
+.tab-contents.active-tab { display: block; }
+.tab-link { cursor: pointer; }
+.tab-link.active-link { color: var(--primary-color); font-weight: bold; }
+*/
