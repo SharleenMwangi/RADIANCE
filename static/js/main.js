@@ -28,24 +28,42 @@ function openTab(evt, tabName) {
 window.openTab = openTab;
 
 /* --------------------------------------------------------------
-   2. MOBILE MENU TOGGLE – Safe & UX-friendly
+   2. MOBILE MENU TOGGLE – Enhanced UX
    -------------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.querySelector('.nav-toggle');
     const header = document.querySelector('header');
+    const nav = header?.querySelector('nav');
 
-    if (toggle && header) {
-        toggle.addEventListener('click', () => {
-            header.classList.toggle('nav-open');
-        });
+    if (!toggle || !header || !nav) return;
 
-        // Close menu when clicking nav links
-        document.querySelectorAll('nav a').forEach(link => {
-            link.addEventListener('click', () => {
-                header.classList.remove('nav-open');
-            });
-        });
-    }
+    const open = () => {
+        header.classList.add('nav-open');
+        toggle.setAttribute('aria-expanded', 'true');
+    };
+    const close = () => {
+        header.classList.remove('nav-open');
+        toggle.setAttribute('aria-expanded', 'false');
+    };
+
+    toggle.addEventListener('click', () => {
+        header.classList.contains('nav-open') ? close() : open();
+    });
+
+    // Close when clicking a link
+    nav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', close);
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!header.contains(e.target)) close();
+    });
+
+    // Close with ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') close();
+    });
 });
 
 /* --------------------------------------------------------------
