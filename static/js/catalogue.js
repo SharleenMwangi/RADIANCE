@@ -306,17 +306,30 @@ function buildAlphaNav() {
     if (!el) return;
 
     let navItems = [];
-    if (STATE.groupBy === 'trade') {
+
+    if (STATE.groupBy === 'trade' || STATE.groupBy === 'generic') {
+        // ------------------------------------------------------
+        // ALWAYS SHOW A-Z (active if there is at least one product)
+        // ------------------------------------------------------
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-        const available = new Set(STATE.allProducts.map(p => (p.trade?.[0] || '').toUpperCase()).filter(Boolean));
-        navItems = letters.map(L => available.has(L) ? `<a href="#${encodeURIComponent(L)}">${L}</a>` : `<span class="inactive">${L}</span>`);
+        const available = new Set(
+            STATE.allProducts.map(p => {
+                const first = (STATE.groupBy === 'trade' ? p.trade : p.generic)?.[0]?.toUpperCase();
+                return first;
+            }).filter(Boolean)
+        );
+
+        navItems = letters.map(L => {
+            const isActive = available.has(L);
+            const href = `#${encodeURIComponent(L)}`;
+            return isActive
+                ? `<a href="${href}">${L}</a>`
+                : `<span class="inactive">${L}</span>`;
+        });
     } else if (STATE.groupBy === 'therapeutic') {
+        // Therapeutic classes – show each class as a link
         const available = [...new Set(STATE.allProducts.map(p => p.class).filter(Boolean))].sort();
         navItems = available.map(c => `<a href="#${encodeURIComponent(c)}">${c}</a>`);
-    } else if (STATE.groupBy === 'generic') {
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-        const available = new Set(STATE.allProducts.map(p => (p.generic?.[0] || '').toUpperCase()).filter(Boolean));
-        navItems = letters.map(L => available.has(L) ? `<a href="#${encodeURIComponent(L)}">${L}</a>` : `<span class="inactive">${L}</span>`);
     }
 
     el.innerHTML = navItems.join('');
