@@ -305,36 +305,39 @@ function buildAlphaNav() {
     const el = $('#alpha');
     if (!el) return;
 
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
     let navItems = [];
 
-    if (STATE.groupBy === 'trade' || STATE.groupBy === 'generic') {
-        // ------------------------------------------------------
-        // ALWAYS SHOW A-Z (active if there is at least one product)
-        // ------------------------------------------------------
-        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+    /* ------------------------------------------------------
+       1. TRADE NAME  →  first letter of trade name
+       2. GENERIC    →  first letter of generic name
+       3. THERAPEUTIC → first letter of the **class name**
+       ------------------------------------------------------ */
+    if (STATE.groupBy === 'trade' || STATE.groupBy === 'generic' || STATE.groupBy === 'therapeutic') {
+        // Build the set of first-letters that actually exist
         const available = new Set(
             STATE.allProducts.map(p => {
-                const first = (STATE.groupBy === 'trade' ? p.trade : p.generic)?.[0]?.toUpperCase();
-                return first;
+                let str = '';
+                if (STATE.groupBy === 'trade')      str = p.trade;
+                else if (STATE.groupBy === 'generic') str = p.generic;
+                else if (STATE.groupBy === 'therapeutic') str = p.class;
+
+                return str?.[0]?.toUpperCase();
             }).filter(Boolean)
         );
 
+        // Render A-Z – active if present, otherwise inactive
         navItems = letters.map(L => {
-            const isActive = available.has(L);
-            const href = `#${encodeURIComponent(L)}`;
-            return isActive
+            const active = available.has(L);
+            const href   = `#${encodeURIComponent(L)}`;
+            return active
                 ? `<a href="${href}">${L}</a>`
                 : `<span class="inactive">${L}</span>`;
         });
-    } else if (STATE.groupBy === 'therapeutic') {
-        // Therapeutic classes – show each class as a link
-        const available = [...new Set(STATE.allProducts.map(p => p.class).filter(Boolean))].sort();
-        navItems = available.map(c => `<a href="#${encodeURIComponent(c)}">${c}</a>`);
     }
 
     el.innerHTML = navItems.join('');
 }
-
 /* --------------------------------------------------------------
    9. CATEGORY DROPDOWN & LIST
    -------------------------------------------------------------- */
