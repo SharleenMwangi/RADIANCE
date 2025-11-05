@@ -169,21 +169,34 @@ function renderCatalog(filter = '') {
     }
 
     groupKeys.forEach(groupKey => {
-        const items = map[groupKey].sort((a, b) => {
+        let items = map[groupKey].sort((a, b) => {
             if (STATE.groupBy === 'trade') return a.trade.localeCompare(b.trade);
             else if (STATE.groupBy === 'therapeutic') return a.class.localeCompare(b.class) || a.trade.localeCompare(b.trade);
             else if (STATE.groupBy === 'generic') return a.generic.localeCompare(b.generic) || a.trade.localeCompare(b.trade);
             return a.trade.localeCompare(b.trade);
         });
+
+        // Move highlighted item to front if it exists in this group
+        const highlightedId = location.hash.slice(1);
+        if (highlightedId) {
+            const highlightedIndex = items.findIndex(p => p.id.toString() === highlightedId);
+            if (highlightedIndex > 0) {
+                const [highlighted] = items.splice(highlightedIndex, 1);
+                items.unshift(highlighted);
+            }
+        }
+
         const cards = items.map(p => {
             const color = STATE.classColors[p.class] || '#94a3b8';
             const img = p.image_urls[0] || svgPlaceholder(p.trade.split(' ')[0], color);
-            return `<div class="card" tabindex="0" aria-label="${p.trade}">
+            const isHighlighted = location.hash.slice(1) === p.id.toString();
+            return `<div class="card ${isHighlighted ? 'highlighted' : ''}" id="${p.id}" tabindex="0" aria-label="${p.trade}">
                 <div class="thumb"><img src="${img}" alt="${p.trade}" loading="lazy"></div>
                 <div class="body">
                     <span class="tag" style="background:${color}">${p.class}</span>
                     <h4 class="name">${p.trade}</h4>
                     <p class="strength">${p.generic} — ${p.strength}</p>
+                    <button class="share-btn" data-id="${p.id}" data-trade="${p.trade}" data-generic="${p.generic}" data-strength="${p.strength}">Share</button>
                 </div>
             </div>`;
         }).join('');
@@ -195,6 +208,7 @@ function renderCatalog(filter = '') {
             </div>
         `);
     });
+    bindShareEvents();
 }
 
 /* --------------------------------------------------------------
@@ -206,10 +220,20 @@ function renderHome(filter = '') {
     const noResults = $('#noResults');
 
     const low = filter.toLowerCase();
-    const filtered = STATE.allProducts.filter(p => {
+    let filtered = STATE.allProducts.filter(p => {
         const fields = [p.trade, p.generic, p.strength, p.class].map(s => (s || '').toLowerCase());
         return !low || fields.some(f => f.includes(low));
     });
+
+    // Move highlighted item to front if it exists
+    const highlightedId = location.hash.slice(1);
+    if (highlightedId) {
+        const highlightedIndex = filtered.findIndex(p => p.id.toString() === highlightedId);
+        if (highlightedIndex > 0) {
+            const [highlighted] = filtered.splice(highlightedIndex, 1);
+            filtered.unshift(highlighted);
+        }
+    }
 
     if (!filtered.length) {
         section.innerHTML = '';
@@ -222,8 +246,9 @@ function renderHome(filter = '') {
     const cards = filtered.slice(0, 12).map(p => {
         const color = STATE.classColors[p.class] || '#94a3b8';
         const img = p.image_urls[0] || svgPlaceholder(p.trade.split(' ')[0], color);
+        const isHighlighted = location.hash.slice(1) === p.id.toString();
         return `
-            <article class="product-card" tabindex="0">
+            <article class="product-card ${isHighlighted ? 'highlighted' : ''}" id="${p.id}" tabindex="0">
                 <div class="product-thumb">
                     ${img.startsWith('data:') || img.startsWith('http') || img.startsWith('/') 
                         ? `<img src="${img}" alt="${p.trade}" loading="lazy">`
@@ -235,12 +260,50 @@ function renderHome(filter = '') {
                     <div class="product-name">${p.trade}</div>
                     <div class="product-generic">${p.generic}</div>
                     <div class="product-strength">${p.strength}</div>
+                    <button class="share-btn" data-id="${p.id}" data-trade="${p.trade}" data-generic="${p.generic}" data-strength="${p.strength}">Share</button>
                 </div>
             </article>
         `;
     }).join('');
 
     section.innerHTML = cards;
+    bindShareEvents();
+}
+
+/* --------------------------------------------------------------
+   SHARE FUNCTIONALITY
+   -------------------------------------------------------------- */
+function bindShareEvents() {
+    $$('.share-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const id = btn.dataset.id;
+            const trade = btn.dataset.trade;
+            const generic = btn.dataset.generic;
+            const strength = btn.dataset.strength;
+            const url = window.location.href.split('#')[0] + '#' + id;
+            const text = `Check out ${trade} (${generic}) - ${strength}. From Radiance Pharmaceuticals.`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: trade,
+                        text: text,
+                        url: url
+                    });
+                } catch (err) {
+                    console.log('Share cancelled or failed');
+                }
+            } else {
+                // Fallback: copy to clipboard
+                try {
+                    await navigator.clipboard.writeText(`${text} ${url}`);
+                    alert('Link copied to clipboard!');
+                } catch (err) {
+                    alert('Sharing not supported. Please copy the link manually.');
+                }
+            }
+        });
+    });
 }
 
 /* --------------------------------------------------------------
@@ -470,11 +533,25 @@ function bindEvents() {
     }
 
     // Hash scroll
-    if (location.hash && STATE.isCatalog) {
-        const target = decodeURIComponent(location.hash.slice(1));
-        const el = document.getElementById(target);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
+    if (location.hash) {
+        setTimeout(() => {
+            const target = location.hash.slice(1);
+            const el = document.getElementById(target);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 10);
     }
+
+    // Dynamic reordering on hash change
+    window.addEventListener('hashchange', () => {
+        const currentFilter = $('#searchInput')?.value || '';
+        search(currentFilter);
+        // Scroll to highlighted item after re-render
+        setTimeout(() => {
+            const target = location.hash.slice(1);
+            const el = document.getElementById(target);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 10);
+    });
 }
 
 /* --------------------------------------------------------------

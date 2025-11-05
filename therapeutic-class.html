@@ -716,6 +716,7 @@
             <h4 class="name" id="${encodeURIComponent(d.trade)}">${d.trade}</h4>
             <p class="strength">${d.generic} — ${d.strength}</p>
             <p class="price">Trade: <span class="KSH">KSh ${fmt(d.tradePrice)}</span><br>Retail: <span class="KSH">${d.retailPrice?`KSh ${fmt(d.retailPrice)}`:'NETT'}</span></p>
+            <button class="share-btn" data-trade="${d.trade}" data-generic="${d.generic}" data-strength="${d.strength}">Share</button>
           </div>
         </div>`;
       }).join('');
@@ -759,6 +760,35 @@ document.addEventListener('click', (e)=>{
 });
 document.getElementById('search').addEventListener('input', (e)=>{
   renderByClass(e.target.value);
+});
+
+// Share buttons
+document.addEventListener('click', async (e) => {
+    if (!e.target.classList.contains('share-btn')) return;
+    const btn = e.target;
+    const trade = btn.dataset.trade;
+    const generic = btn.dataset.generic;
+    const strength = btn.dataset.strength;
+    const url = window.location.href.split('#')[0] + '#' + encodeURIComponent(trade);
+    const text = `Check out ${trade} (${generic}) - ${strength}. From Radiance Pharmaceuticals.`;
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: trade,
+                text: text,
+                url: url
+            });
+        } catch (err) {
+            console.log('Share cancelled or failed');
+        }
+    } else {
+        try {
+            await navigator.clipboard.writeText(`${text} ${url}`);
+            alert('Link copied to clipboard!');
+        } catch (err) {
+            alert('Sharing not supported. Please copy the link manually.');
+        }
+    }
 });
 
 populateHoverMenus();

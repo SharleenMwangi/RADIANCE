@@ -1070,7 +1070,7 @@ nav a:hover::after {
     position: fixed;
     bottom: 80px;
     right: 20px;
-    background: #25d366;
+    background: #25D366;
     color: white;
     border: none;
     width: 50px;
@@ -1080,16 +1080,50 @@ nav a:hover::after {
     opacity: 1;
     visibility: visible;
     transition: all 0.3s;
-    z-index: 999;
+    z-index: 1000;
     box-shadow: var(--shadow-md);
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.2rem;
 }
 
 .whatsapp-btn:hover {
-    background: #128c7e;
+    background: #128C7E;
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+}
+
+.share-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    margin-top: 8px;
+    transition: var(--transition);
+    align-self: flex-start;
+}
+
+.share-btn:hover {
+    background: var(--secondary);
+    transform: translateY(-1px);
+}
+
+/* Highlighted shared product */
+.card.highlighted,
+.product-card.highlighted {
+    border: 3px solid #FFD700 !important;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6) !important;
+    animation: highlightPulse 2s ease-in-out;
+}
+
+@keyframes highlightPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
 }
 
 /* ===================================
@@ -1303,6 +1337,24 @@ nav a:hover::after {
     .catalog-page .group h2 {
         font-size: 1.2rem;
         margin: 1.5rem 0 0.8rem;
+    }
+
+    /* Fixed buttons on mobile */
+    .scroll-to-top,
+    .whatsapp-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+
+    .whatsapp-btn {
+        bottom: 70px;
+        right: 15px;
+    }
+
+    .scroll-to-top {
+        bottom: 15px;
+        right: 15px;
     }
 }
 /* ===================================
