@@ -254,6 +254,14 @@
     </footer>
 
 
+    <button id="scrollToTop" class="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <button id="whatsappBtn" class="whatsapp-btn" aria-label="Contact via WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </button>
+
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script>
@@ -663,6 +671,34 @@ if(location.hash){
   const el=document.getElementById(target);
   if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
 }
+
+// Scroll to top
+document.addEventListener('DOMContentLoaded', () => {
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+    if (scrollToTopBtn) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.classList.add('show');
+            } else {
+                scrollToTopBtn.classList.remove('show');
+            }
+        });
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    // WhatsApp button
+    const whatsappBtn = document.getElementById('whatsappBtn');
+    if (whatsappBtn) {
+        whatsappBtn.addEventListener('click', () => {
+            window.open('https://wa.me/254711638779', '_blank');
+        });
+    }
+});
     </script>
 </body>
 

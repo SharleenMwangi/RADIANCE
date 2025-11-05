@@ -528,5 +528,20 @@ async function init() {
     }
 }
 
+// Dynamic sticky search box positioning
+const header = document.querySelector('header');
+const searchBox = document.querySelector('.search-box');
+
+function updateSearchTop() {
+    if (header && searchBox) {
+        const headerHeight = header.offsetHeight;
+        searchBox.style.top = headerHeight + 'px';
+    }
+}
+
+updateSearchTop();
+window.addEventListener('scroll', updateSearchTop);
+window.addEventListener('resize', updateSearchTop);
+
 // Start
 init();
