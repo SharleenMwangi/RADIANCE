@@ -807,6 +807,12 @@ nav a:hover::after {
 /* ===================================
    CATALOG PAGE
    =================================== */
+.catalog-page main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
 .catalog-page .page-header {
     text-align: center;
     padding: 2rem 0;
@@ -871,6 +877,30 @@ nav a:hover::after {
 .catalog-page .alpha .inactive {
     color: #cbd5e1;
     pointer-events: none;
+}
+
+.catalog-page .hint {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin: 1rem 0 0.5rem;
+    font-style: italic;
+}
+
+.catalog-page .hint {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin: 1rem 0 0.5rem;
+    font-style: italic;
+}
+
+.catalog-page .hint {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin: 1rem 0 0.5rem;
+    font-style: italic;
 }
 
 .catalog-page .group h2 {
@@ -1096,6 +1126,54 @@ nav a:hover::after {
     .catalog-page .grid {
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     }
+
+    /* Contact form responsive */
+    .contact-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .contact-info,
+    .contact-form {
+        padding: 1.5rem;
+    }
+
+    .map-container iframe {
+        height: 250px;
+    }
+
+    /* Catalogue page mobile fixes */
+    .catalog-page .alpha {
+        position: relative;
+        top: auto;
+        padding: 1rem 0;
+        margin: 1rem 0;
+        background: #f8fafc;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        display: none;
+    }
+
+    .catalog-page .hint {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        text-align: center;
+        margin: 1rem 0 0.5rem;
+    }
+
+    .catalog-page main {
+        padding: 0 1rem;
+    }
+
+    .catalog-page .group h2 {
+        font-size: 1.4rem;
+        margin: 1.5rem 0 1rem;
+    }
+
+    .catalog-page .grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1108,6 +1186,60 @@ nav a:hover::after {
         width: 36px;
         height: 36px;
         font-size: 0.9rem;
+    }
+
+    /* Contact form mobile optimization */
+    .contact {
+        padding: 2rem 1rem;
+    }
+
+    .contact-intro {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .contact-intro h2 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-info,
+    .contact-form {
+        padding: 1rem;
+    }
+
+    .contact-form .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    .map-container iframe {
+        height: 200px;
+    }
+
+    .catalog-page .hint {
+        font-size: 0.85rem;
+        margin: 0.5rem 0;
+    }
+
+    .catalog-page .alpha {
+        padding: 0.8rem 0;
+        margin: 0.5rem 0;
+    }
+
+    .catalog-page #loading {
+        padding: 1.5rem 0;
+        font-size: 0.95rem;
+    }
+
+    .catalog-page .group h2 {
+        font-size: 1.2rem;
+        margin: 1.5rem 0 0.8rem;
     }
 }
 /* ===================================
@@ -1361,6 +1493,44 @@ nav a:hover::after {
     }
     .product-grid {
         grid-template-columns: 1fr;
+    }
+
+    /* Catalogue page main section responsive */
+    .catalog-page main {
+        padding: 0 1rem;
+    }
+
+    .catalog-page .product-controls {
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: stretch;
+    }
+
+    .catalog-page .search-box {
+        max-width: 100%;
+        margin-bottom: 0;
+    }
+
+    .catalog-page .category-filter {
+        justify-content: flex-start;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .catalog-page .category-filter::-webkit-scrollbar {
+        display: none;
+    }
+
+    .catalog-page .hint {
+        font-size: 0.9rem;
+        margin: 1.5rem 0 1rem;
+    }
+
+    .catalog-page #loading {
+        padding: 2rem 0;
+        font-size: 1rem;
     }
 }
 

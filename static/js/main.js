@@ -281,12 +281,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const url = '/proxy' + (path.startsWith('/') ? path : '/' + path);
         const headers = { ...opts.headers, Accept: 'application/json' };
 
-        const tenant = document.querySelector('meta[name="public-tenant"]')?.content;
-        const pubKey = document.querySelector('meta[name="public-api-key"]')?.content;
-        if (tenant) headers['X-Tenant'] = tenant;
-        if (pubKey) headers['X-API-Key'] = pubKey;
-
-        try {
+    const tenant = document.querySelector('meta[name="public-tenant"]')?.content;
+    const pubKey = document.querySelector('meta[name="public-api-key"]')?.content;
+    if (tenant) headers['X-Tenant'] = tenant;
+    if (pubKey) headers['X-API-Key'] = pubKey;        try {
             return await fetch(url, { ...opts, headers, credentials: 'same-origin' });
         } catch (err) {
             console.warn('Fetch failed:', err);
