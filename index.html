@@ -82,23 +82,57 @@
             </div>
 
             <div class="about-image">
-                <div class="carousel" data-auto="true" data-interval="4000">
+                <div class="carousel">
+                    <input type="radio" name="carousel-about" id="slide1" checked>
+                    <input type="radio" name="carousel-about" id="slide2">
+                    <input type="radio" name="carousel-about" id="slide3">
+                    <input type="radio" name="carousel-about" id="slide4">
+                    <input type="radio" name="carousel-about" id="slide5">
+                    <input type="radio" name="carousel-about" id="slide6">
+                    <input type="radio" name="carousel-about" id="slide7">
+                    <input type="radio" name="carousel-about" id="slide8">
                     <div class="slides">
-                        <img src="/static/images/front.jpg" alt="Radiance Front View" loading="lazy">
-                        <img src="/static/images/office.jpg" alt="Office" loading="lazy">
-                        <img src="/static/images/office1.jpg" alt="Office Interior" loading="lazy">
-                        <img src="/static/images/store1.jpg" alt="Store 1" loading="lazy">
-                        <img src="/static/images/store2.jpg" alt="Store 2" loading="lazy">
-                        <img src="/static/images/store3.jpg" alt="Store 3" loading="lazy">
-                        <img src="/static/images/store4.jpg" alt="Store 4" loading="lazy">
-                        <img src="/static/images/delivery2.jpg" alt="Delivery 2" loading="lazy">
+                        <div class="slide">
+                            <img src="/static/images/front.jpg" alt="Radiance Front View" loading="lazy">
+                        </div>
+                        <div class="slide">
+                            <img src="/static/images/office.jpg" alt="Office" loading="lazy">
+                        </div>
+                        <div class="slide">
+                            <img src="/static/images/office1.jpg" alt="Office Interior" loading="lazy">
+                        </div>
+                        <div class="slide">
+                            <img src="/static/images/store1.jpg" alt="Store 1" loading="lazy">
+                        </div>
+                        <div class="slide">
+                            <img src="/static/images/store2.jpg" alt="Store 2" loading="lazy">
+                        </div>
+                        <div class="slide">
+                            <img src="/static/images/store3.jpg" alt="Store 3" loading="lazy">
+                        </div>
+                        <div class="slide">
+                            <img src="/static/images/store4.jpg" alt="Store 4" loading="lazy">
+                        </div>
+                        <div class="slide">
+                            <img src="/static/images/delivery2.jpg" alt="Delivery 2" loading="lazy">
+                        </div>
                     </div>
-                    <button class="prev" aria-label="Previous slide">
+                    <div class="indicators">
+                        <label for="slide1" class="indicator"></label>
+                        <label for="slide2" class="indicator"></label>
+                        <label for="slide3" class="indicator"></label>
+                        <label for="slide4" class="indicator"></label>
+                        <label for="slide5" class="indicator"></label>
+                        <label for="slide6" class="indicator"></label>
+                        <label for="slide7" class="indicator"></label>
+                        <label for="slide8" class="indicator"></label>
+                    </div>
+                    <!-- <button type="button" class="prev" aria-label="Previous slide">
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <button class="next" aria-label="Next slide">
+                    <button type="button" class="next" aria-label="Next slide">
                         <i class="fas fa-chevron-right"></i>
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>
@@ -107,54 +141,58 @@
     <!-- VISION & MISSION -->
     <section id="vision-mission" class="section">
         <h2>Vision & Mission</h2>
-        <div class="tab-titles">
-            <p class="tab-link active-link" onclick="openTab(event, 'vision')">Vision</p>
-            <p class="tab-link" onclick="openTab(event, 'mission')">Mission</p>
-        </div>
-
-        <div class="tab-contents active-tab" id="vision">
-            <ul>
-                <li><span>OUR VISION:</span> To emerge as a leading company in the region offering high quality and
-                    affordable products and services, thus remaining valuable partners to our clients and suppliers.
-                </li>
-            </ul>
-        </div>
-
-        <div class="tab-contents" id="mission">
-            <ul>
-                <li><span>OUR MISSION:</span> We are committed to being the premier company offering a reliable link
-                    between the manufacturers and the users. We apply ethical standards in acquiring, marketing, and
-                    distributing pharmaceutical products.</li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- CORE VALUES -->
-    <section id="core-values" class="section">
-        <h2>Core Values</h2>
-        <div class="values-list">
-            <div class="value-item" style="background-image: url('/static/images/ethics.png');">
-                <div class="overlay"></div>
-                <h3>Ethics</h3>
-                <p>Patient-Centric approach to marketing.</p>
+        <div class="tabs">
+            <input type="radio" name="tabs" id="vision" checked>
+            <input type="radio" name="tabs" id="mission">
+            <div class="tab-titles">
+                <label for="vision" class="tab-link">Vision</label>
+                <label for="mission" class="tab-link">Mission</label>
             </div>
-            <div class="value-item" style="background-image: url('/static/images/people.jpg');">
-                <div class="overlay"></div>
-                <h3>People</h3>
-                <p>Creating a conducive work environment for our staff members.</p>
+            <div class="tab-contents" id="vision-content">
+                <ul>
+                    <li><span>OUR VISION:</span> To emerge as a leading company in the region offering high quality and
+                        affordable products and services, thus remaining valuable partners to our clients and suppliers.
+                    </li>
+                </ul>
             </div>
-            <div class="value-item" style="background-image: url('/static/images/integrity.jpg');">
-                <div class="overlay"></div>
-                <h3>Integrity</h3>
-                <p>Availing factual information to Doctors and Pharmacists.</p>
-            </div>
-            <div class="value-item" style="background-image: url('/static/images/values.jpg');">
-                <div class="overlay"></div>
-                <h3>Values</h3>
-                <p>Being sensitive and responsive to the market expectations.</p>
+            <div class="tab-contents" id="mission-content">
+                <ul>
+                    <li><span>OUR MISSION:</span> We are committed to being the premier company offering a reliable link
+                        between the manufacturers and the users. We apply ethical standards in acquiring, marketing, and
+                        distributing pharmaceutical products.</li>
+                </ul>
             </div>
         </div>
-    </section>
+    </section>    <!-- CORE VALUES -->
+<section id="core-values" class="section">
+    <h2>Core Values</h2>
+    <div class="values-list">
+        <div class="value-item">
+            <img src="/static/images/ethics.png" alt="Ethics" class="value-img">
+            <div class="overlay"></div>
+            <h3>Ethics</h3>
+            <p>Patient-Centric approach to marketing.</p>
+        </div>
+        <div class="value-item">
+            <img src="/static/images/people.jpg" alt="People" class="value-img">
+            <div class="overlay"></div>
+            <h3>People</h3>
+            <p>Creating a conducive work environment for our staff members.</p>
+        </div>
+        <div class="value-item">
+            <img src="/static/images/integrity.jpg" alt="Integrity" class="value-img">
+            <div class="overlay"></div>
+            <h3>Integrity</h3>
+            <p>Availing factual information to Doctors and Pharmacists.</p>
+        </div>
+        <div class="value-item">
+            <img src="/static/images/values.jpg" alt="Values" class="value-img">
+            <div class="overlay"></div>
+            <h3>Values</h3>
+            <p>Being sensitive and responsive to the market expectations.</p>
+        </div>
+    </div>
+</section>
 <!-- PRODUCTS -->
 <section id="products" class="section">
     <h2>Our Products</h2>
@@ -254,19 +292,37 @@
             </div>
 
             <div class="delivery-image">
-                <div class="carousel" data-auto="true" data-interval="4000">
+                <div class="carousel">
+                    <input type="radio" name="carousel-delivery" id="dslide1" checked>
+                    <input type="radio" name="carousel-delivery" id="dslide2">
+                    <input type="radio" name="carousel-delivery" id="dslide3">
+                    <input type="radio" name="carousel-delivery" id="dslide4">
                     <div class="slides">
-                        <img src="/static/images/delivery.jpg" alt="Radiance Delivery Van" loading="lazy">
-                        <img src="/static/images/delivery2.jpg" alt="Nairobi Dispatch Team" loading="lazy">
-                        <img src="/static/images/delivery3.jpg" alt="Fargo Delivery Service" loading="lazy">
-                        <img src="/static/images/delivery4.jpg" alt="G4S Courier Dispatch" loading="lazy">
+                        <div class="slide">
+                            <img src="/static/images/delivery.jpg" alt="Radiance Delivery Van" loading="lazy">
+                        </div>
+                        <div class="slide">
+                            <img src="/static/images/delivery2.jpg" alt="Nairobi Dispatch Team" loading="lazy">
+                        </div>
+                        <div class="slide">
+                            <img src="/static/images/delivery3.jpg" alt="Fargo Delivery Service" loading="lazy">
+                        </div>
+                        <div class="slide">
+                            <img src="/static/images/delivery4.jpg" alt="G4S Courier Dispatch" loading="lazy">
+                        </div>
                     </div>
-                    <button class="prev" aria-label="Previous slide">
+                    <div class="indicators">
+                        <label for="dslide1" class="indicator"></label>
+                        <label for="dslide2" class="indicator"></label>
+                        <label for="dslide3" class="indicator"></label>
+                        <label for="dslide4" class="indicator"></label>
+                    </div>
+                    <!-- <button type="button" class="prev" aria-label="Previous slide">
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <button class="next" aria-label="Next slide">
+                    <button type="button" class="next" aria-label="Next slide">
                         <i class="fas fa-chevron-right"></i>
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>

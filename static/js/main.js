@@ -1,31 +1,7 @@
 /* ==============================================================
-   main.js – All page interactivity (tabs, carousels, API demo,
+   main.js – All page interactivity (carousels, API demo,
    mobile menu, header scroll, product search)
    ============================================================== */
-
-/* --------------------------------------------------------------
-   1. TAB SWITCHING – GUARANTEED TO WORK
-   -------------------------------------------------------------- */
-function openTab(evt, tabName) {
-    const tab = document.getElementById(tabName);
-    const link = evt.currentTarget;
-
-    if (!tab || !link) {
-        console.warn('Tab not found:', tabName);
-        return;
-    }
-
-    // Remove active classes
-    document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active-link'));
-    document.querySelectorAll('.tab-contents').forEach(c => c.classList.remove('active-tab'));
-
-    // Add active
-    tab.classList.add('active-tab');
-    link.classList.add('active-link');
-}
-
-// EXPOSE IMMEDIATELY – BEFORE ANY OTHER CODE
-window.openTab = openTab;
 
 /* --------------------------------------------------------------
    2. MOBILE MENU TOGGLE – Enhanced UX
@@ -69,24 +45,24 @@ document.addEventListener('DOMContentLoaded', () => {
 /* --------------------------------------------------------------
    3. HEADER SCROLL EFFECT – Efficient & Passive
    -------------------------------------------------------------- */
-(function headerScroll() {
-    const header = document.querySelector('header');
-    if (!header) return;
+// (function headerScroll() {
+//     const header = document.querySelector('header');
+//     if (!header) return;
 
-    let ticking = false;
-    const onScroll = () => {
-        if (!ticking) {
-            requestAnimationFrame(() => {
-                header.classList.toggle('scrolled', window.scrollY > 50);
-                ticking = false;
-            });
-            ticking = true;
-        }
-    };
+//     let ticking = false;
+//     const onScroll = () => {
+//         if (!ticking) {
+//             requestAnimationFrame(() => {
+//                 header.classList.toggle('scrolled', window.scrollY > 50);
+//                 ticking = false;
+//             });
+//             ticking = true;
+//         }
+//     };
 
-    onScroll(); // Initial check
-    window.addEventListener('scroll', onScroll, { passive: true });
-})();
+//     onScroll(); // Initial check
+//     window.addEventListener('scroll', onScroll, { passive: true });
+// })();
 
 /* --------------------------------------------------------------
    4. REUSABLE CAROUSEL – Enhanced with touch & accessibility
@@ -94,49 +70,87 @@ document.addEventListener('DOMContentLoaded', () => {
 class SimpleCarousel {
     constructor(containerSel, options = {}) {
         this.container = document.querySelector(containerSel);
-        if (!this.container) return;
+        if (!this.container) {
+            console.warn('Carousel container not found:', containerSel);
+            return;
+        }
 
-        this.slides = this.container.querySelectorAll('.slides img, .carousel-item');
+        this.slides = this.container.querySelectorAll('.slide');
+        this.radios = this.container.querySelectorAll('input[type="radio"]');
         this.prevBtn = this.container.querySelector('.prev');
         this.nextBtn = this.container.querySelector('.next');
+        this.indicators = this.container.querySelector('.indicators');
         this.idx = 0;
         this.auto = options.auto ?? true;
         this.interval = options.interval ?? 4000;
         this.touchStartX = 0;
         this.touchEndX = 0;
 
+        console.log('Initializing carousel with', this.slides.length, 'slides');
         this.init();
     }
 
     init() {
-        if (this.slides.length <= 1) return;
+        if (this.slides.length <= 1) {
+            console.log('Not enough slides, skipping carousel');
+            return;
+        }
 
+        // Set initial checked
         this.showSlide(this.idx);
         this.bindButtons();
+        this.bindRadios();
         this.bindTouch();
         if (this.auto) this.startAuto();
+        console.log('Carousel initialized');
     }
 
     showSlide(n) {
         this.idx = (n + this.slides.length) % this.slides.length;
-        this.slides.forEach((s, i) => {
-            s.style.transform = `translateX(${(i - this.idx) * 100}%)`;
-        });
+        if (this.radios[this.idx]) {
+            this.radios[this.idx].checked = true;
+        }
+        console.log('Showing slide', this.idx);
     }
 
     next() {
+        console.log('Next button clicked');
         this.showSlide(this.idx + 1);
         this.resetAuto();
     }
 
     prev() {
+        console.log('Prev button clicked');
         this.showSlide(this.idx - 1);
         this.resetAuto();
     }
 
     bindButtons() {
-        if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.next());
-        if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.prev());
+        if (this.nextBtn) {
+            this.nextBtn.addEventListener('click', () => this.next());
+            console.log('Next button bound');
+        } else {
+            console.warn('Next button not found');
+        }
+        if (this.prevBtn) {
+            this.prevBtn.addEventListener('click', () => this.prev());
+            console.log('Prev button bound');
+        } else {
+            console.warn('Prev button not found');
+        }
+    }
+
+    bindRadios() {
+        this.radios.forEach((radio, i) => {
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    this.idx = i;
+                    this.resetAuto();
+                    console.log('Radio changed to', i);
+                }
+            });
+        });
+        console.log('Radios bound');
     }
 
     bindTouch() {
@@ -148,34 +162,47 @@ class SimpleCarousel {
             this.touchEndX = e.changedTouches[0].screenX;
             this.handleSwipe();
         }, { passive: true });
+        console.log('Touch events bound');
     }
 
     handleSwipe() {
         const diff = this.touchStartX - this.touchEndX;
-        if (Math.abs(diff) > 50) { // Minimum swipe distance
+        if (Math.abs(diff) > 50) {
+            console.log('Swipe detected:', diff > 0 ? 'next' : 'prev');
             diff > 0 ? this.next() : this.prev();
         }
     }
 
     startAuto() {
+        console.log('Starting auto-play');
         this.timer = setInterval(() => this.next(), this.interval);
-        this.container.addEventListener('mouseenter', () => clearInterval(this.timer));
-        this.container.addEventListener('mouseleave', () => this.startAuto());
+        this.container.addEventListener('mouseenter', () => {
+            console.log('Mouse enter, pausing auto');
+            clearInterval(this.timer);
+        });
+        this.container.addEventListener('mouseleave', () => {
+            console.log('Mouse leave, resuming auto');
+            this.startAuto();
+        });
     }
 
     resetAuto() {
         if (this.auto && this.timer) {
             clearInterval(this.timer);
             this.startAuto();
+            console.log('Auto reset');
         }
     }
 }
 
 /* Initialise all carousels */
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.carousel').forEach(el => 
-        new SimpleCarousel(el, { auto: true })
-    );
+    const carousels = document.querySelectorAll('.carousel');
+    console.log('Found', carousels.length, 'carousel(s)');
+    carousels.forEach((el, i) => {
+        console.log('Initializing carousel', i + 1);
+        new SimpleCarousel(el, { auto: true, interval: 4000 });
+    });
 
     // Infinite scroll for partners/clients
     ['.partners-carousel', '.clients-carousel'].forEach(sel => {
@@ -271,10 +298,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const map = {
             '/public/products': () => renderList('productsList', data?.products, p => `<li>${p.name} (${p.price ?? ''})</li>`),
             '/public/categories': () => renderList('categoryList', data?.categories || data, c => `<li>${c.name}</li>`),
-            /^\/public\/products\/\d+$/: () => {
-                const el = document.getElementById('productDetail');
-                if (el && data?.name) el.innerHTML = `<h3>${data.name}</h3><p>${data.description || ''}</p>`;
-            },
             '/public/prices': () => renderList('pricesList', data, p => `<li>${p.price_type}: ${p.value} ${p.currency}</li>`),
             '/public/price-categories': () => renderList('priceCategoriesList', data, c => `<li>${c.name}: Trade ${c.tradePrice}, Retail ${c.retailPrice}</li>`),
             '/public/images': () => {
@@ -293,12 +316,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        for (const [pattern, fn] of Object.entries(map)) {
-            if ((typeof pattern === 'string' && pattern === path) || 
-                (pattern instanceof RegExp && pattern.test(path))) {
-                fn();
-                return;
-            }
+        if (map[path]) {
+            map[path]();
+        } else if (/^\/public\/products\/\d+$/.test(path)) {
+            const el = document.getElementById('productDetail');
+            if (el && data?.name) el.innerHTML = `<h3>${data.name}</h3><p>${data.description || ''}</p>`;
         }
     }
 
@@ -360,12 +382,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 })();
 
+
 /* --------------------------------------------------------------
-   7. CSS TO ENSURE TABS WORK (Add this to your CSS file!)
+   CORE VALUES – set background images with correct base path
    -------------------------------------------------------------- */
-/*
-.tab-contents { display: none; }
-.tab-contents.active-tab { display: block; }
-.tab-link { cursor: pointer; }
-.tab-link.active-link { color: var(--primary-color); font-weight: bold; }
-*/
+document.addEventListener('DOMContentLoaded', () => {
+    const BASE = (document.querySelector('base')?.href ||
+                  document.head.querySelector('meta[name="static-base"]')?.content ||
+                  '/static/images/').replace(/\/+$/, '') + '/';
+
+    document.querySelectorAll('.value-item[data-bg]').forEach(el => {
+        const img = el.dataset.bg;
+        const url = `url("${BASE}${img}")`;
+        el.style.backgroundImage = url;
+
+        // Optional: preload to avoid FOUC
+        new Image().src = `${BASE}${img}`;
+    });
+});
