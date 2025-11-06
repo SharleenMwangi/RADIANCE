@@ -426,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const whatsappBtn = document.getElementById('whatsappBtn');
     if (whatsappBtn) {
         whatsappBtn.addEventListener('click', () => {
-            window.open('https://wa.me/254711638779', '_blank');
+            window.open('https://wa.me/254736436225', '_blank');
         });
     }
 });
