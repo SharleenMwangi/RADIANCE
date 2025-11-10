@@ -254,6 +254,14 @@
     </footer>
 
 
+    <button id="scrollToTop" class="scroll-to-top" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <button id="whatsappBtn" class="whatsapp-btn" aria-label="Contact via WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </button>
+
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script>
@@ -627,6 +635,7 @@
           <h4 class="name" id="${encodeURIComponent(d.trade)}">${d.trade}</h4>
           <p class="strength">${d.generic} — ${d.strength}</p>
           <p class="price">Trade: <strong>KSh ${fmt(d.tradePrice)}</strong><br>Retail: <strong>${d.retailPrice?`KSh ${fmt(d.retailPrice)}`:'NETT'}</strong></p>
+          <button class="share-btn" data-trade="${d.trade}" data-generic="${d.generic}" data-strength="${d.strength}">Share</button>
         </div>
       </div>`;
     }).join('');
@@ -654,6 +663,35 @@ function populateHoverMenus(){
 
 document.getElementById('searchInput').addEventListener('input', e=>byClass(e.target.value));
 
+// Share buttons
+document.addEventListener('click', async (e) => {
+    if (!e.target.classList.contains('share-btn')) return;
+    const btn = e.target;
+    const trade = btn.dataset.trade;
+    const generic = btn.dataset.generic;
+    const strength = btn.dataset.strength;
+    const url = window.location.href.split('#')[0] + '#' + encodeURIComponent(trade);
+    const text = `Check out ${trade} (${generic}) - ${strength}. From Radiance Pharmaceuticals.`;
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: trade,
+                text: text,
+                url: url
+            });
+        } catch (err) {
+            console.log('Share cancelled or failed');
+        }
+    } else {
+        try {
+            await navigator.clipboard.writeText(`${text} ${url}`);
+            alert('Link copied to clipboard!');
+        } catch (err) {
+            alert('Sharing not supported. Please copy the link manually.');
+        }
+    }
+});
+
 populateHoverMenus();
 buildClassNav();
 byClass();
@@ -663,6 +701,34 @@ if(location.hash){
   const el=document.getElementById(target);
   if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
 }
+
+// Scroll to top
+document.addEventListener('DOMContentLoaded', () => {
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+    if (scrollToTopBtn) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.classList.add('show');
+            } else {
+                scrollToTopBtn.classList.remove('show');
+            }
+        });
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    // WhatsApp button
+    const whatsappBtn = document.getElementById('whatsappBtn');
+    if (whatsappBtn) {
+        whatsappBtn.addEventListener('click', () => {
+            window.open('https://wa.me/254711638779', '_blank');
+        });
+    }
+});
     </script>
 </body>
 

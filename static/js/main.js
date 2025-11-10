@@ -1,247 +1,335 @@
 /* ==============================================================
-   main.js – All page interactivity (tabs, carousels, API demo,
+   main.js – All page interactivity (carousels, API demo,
    mobile menu, header scroll, product search)
    ============================================================== */
 
 /* --------------------------------------------------------------
-   1. TAB SWITCHING (Vision / Mission)
-   -------------------------------------------------------------- */
-function openTab(evt, tabName) {
-    // Remove active classes
-    document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active-link'));
-    document.querySelectorAll('.tab-contents').forEach(c => c.classList.remove('active-tab'));
-
-    // Activate selected tab
-    document.getElementById(tabName).classList.add('active-tab');
-    evt.currentTarget.classList.add('active-link');
-}
-
-/* --------------------------------------------------------------
-   2. MOBILE MENU TOGGLE
+   2. MOBILE MENU TOGGLE – Enhanced UX
    -------------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.querySelector('.nav-toggle');
     const header = document.querySelector('header');
+    const nav = header?.querySelector('nav');
 
-    if (toggle && header) {
-        toggle.addEventListener('click', () => {
-            header.classList.toggle('nav-open');
-        });
+    if (!toggle || !header || !nav) return;
 
-        // Close when clicking a link (nice UX)
-        document.querySelectorAll('nav a').forEach(link => {
-            link.addEventListener('click', () => {
-                header.classList.remove('nav-open');
-            });
-        });
-    }
+    const open = () => {
+        header.classList.add('nav-open');
+        toggle.setAttribute('aria-expanded', 'true');
+    };
+    const close = () => {
+        header.classList.remove('nav-open');
+        toggle.setAttribute('aria-expanded', 'false');
+    };
+
+    toggle.addEventListener('click', () => {
+        header.classList.contains('nav-open') ? close() : open();
+    });
+
+    // Close when clicking a link
+    nav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', close);
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!header.contains(e.target)) close();
+    });
+
+    // Close with ESC
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') close();
+    });
 });
 
 /* --------------------------------------------------------------
-   3. HEADER SCROLL EFFECT
+   3. HEADER SCROLL EFFECT – Efficient & Passive
    -------------------------------------------------------------- */
-(function headerScroll() {
-    const header = document.querySelector('header');
-    if (!header) return;
+// (function headerScroll() {
+//     const header = document.querySelector('header');
+//     if (!header) return;
 
-    const onScroll = () => {
-        header.classList.toggle('scrolled', window.scrollY > 50);
-    };
+//     let ticking = false;
+//     const onScroll = () => {
+//         if (!ticking) {
+//             requestAnimationFrame(() => {
+//                 header.classList.toggle('scrolled', window.scrollY > 50);
+//                 ticking = false;
+//             });
+//             ticking = true;
+//         }
+//     };
 
-    onScroll();                     // initial check
-    window.addEventListener('scroll', onScroll, { passive: true });
-})();
+//     onScroll(); // Initial check
+//     window.addEventListener('scroll', onScroll, { passive: true });
+// })();
 
 /* --------------------------------------------------------------
-   4. REUSABLE CAROUSEL (partners, clients, hero, about, delivery)
+   4. REUSABLE CAROUSEL – Enhanced with touch & accessibility
    -------------------------------------------------------------- */
 class SimpleCarousel {
     constructor(containerSel, options = {}) {
         this.container = document.querySelector(containerSel);
-        if (!this.container) return;
+        if (!this.container) {
+            console.warn('Carousel container not found:', containerSel);
+            return;
+        }
 
-        this.slides = this.container.querySelectorAll('.slides img, .carousel-item');
+        this.slides = this.container.querySelectorAll('.slide');
+        this.radios = this.container.querySelectorAll('input[type="radio"]');
         this.prevBtn = this.container.querySelector('.prev');
         this.nextBtn = this.container.querySelector('.next');
+        this.indicators = this.container.querySelector('.indicators');
         this.idx = 0;
         this.auto = options.auto ?? true;
         this.interval = options.interval ?? 4000;
+        this.touchStartX = 0;
+        this.touchEndX = 0;
 
+        console.log('Initializing carousel with', this.slides.length, 'slides');
         this.init();
     }
 
     init() {
-        if (this.slides.length <= 1) return;
+        if (this.slides.length <= 1) {
+            console.log('Not enough slides, skipping carousel');
+            return;
+        }
 
+        // Set initial checked
         this.showSlide(this.idx);
         this.bindButtons();
+        this.bindRadios();
+        this.bindTouch();
         if (this.auto) this.startAuto();
+        console.log('Carousel initialized');
     }
 
     showSlide(n) {
-        this.slides.forEach((s, i) => {
-            s.style.transform = `translateX(${(i - n) * 100}%)`;
-        });
+        this.idx = (n + this.slides.length) % this.slides.length;
+        if (this.radios[this.idx]) {
+            this.radios[this.idx].checked = true;
+        }
+        console.log('Showing slide', this.idx);
     }
 
     next() {
-        this.idx = (this.idx + 1) % this.slides.length;
-        this.showSlide(this.idx);
+        console.log('Next button clicked');
+        this.showSlide(this.idx + 1);
+        this.resetAuto();
     }
 
     prev() {
-        this.idx = (this.idx - 1 + this.slides.length) % this.slides.length;
-        this.showSlide(this.idx);
+        console.log('Prev button clicked');
+        this.showSlide(this.idx - 1);
+        this.resetAuto();
     }
 
     bindButtons() {
-        if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.next());
-        if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.prev());
+        if (this.nextBtn) {
+            this.nextBtn.addEventListener('click', () => this.next());
+            console.log('Next button bound');
+        } else {
+            console.warn('Next button not found');
+        }
+        if (this.prevBtn) {
+            this.prevBtn.addEventListener('click', () => this.prev());
+            console.log('Prev button bound');
+        } else {
+            console.warn('Prev button not found');
+        }
+    }
+
+    bindRadios() {
+        this.radios.forEach((radio, i) => {
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    this.idx = i;
+                    this.resetAuto();
+                    console.log('Radio changed to', i);
+                }
+            });
+        });
+        console.log('Radios bound');
+    }
+
+    bindTouch() {
+        this.container.addEventListener('touchstart', e => {
+            this.touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        this.container.addEventListener('touchend', e => {
+            this.touchEndX = e.changedTouches[0].screenX;
+            this.handleSwipe();
+        }, { passive: true });
+        console.log('Touch events bound');
+    }
+
+    handleSwipe() {
+        const diff = this.touchStartX - this.touchEndX;
+        if (Math.abs(diff) > 50) {
+            console.log('Swipe detected:', diff > 0 ? 'next' : 'prev');
+            diff > 0 ? this.next() : this.prev();
+        }
     }
 
     startAuto() {
+        console.log('Starting auto-play');
         this.timer = setInterval(() => this.next(), this.interval);
-        this.container.addEventListener('mouseenter', () => clearInterval(this.timer));
-        this.container.addEventListener('mouseleave', () => this.timer = setInterval(() => this.next(), this.interval));
+        this.container.addEventListener('mouseenter', () => {
+            console.log('Mouse enter, pausing auto');
+            clearInterval(this.timer);
+        });
+        this.container.addEventListener('mouseleave', () => {
+            console.log('Mouse leave, resuming auto');
+            this.startAuto();
+        });
+    }
+
+    resetAuto() {
+        if (this.auto && this.timer) {
+            clearInterval(this.timer);
+            this.startAuto();
+            console.log('Auto reset');
+        }
     }
 }
 
 /* Initialise all carousels */
 document.addEventListener('DOMContentLoaded', () => {
-    // Hero / About / Delivery carousels
-    document.querySelectorAll('.carousel').forEach(el => new SimpleCarousel(el, { auto: true }));
+    const carousels = document.querySelectorAll('.carousel');
+    console.log('Found', carousels.length, 'carousel(s)');
+    carousels.forEach((el, i) => {
+        console.log('Initializing carousel', i + 1);
+        new SimpleCarousel(el, { auto: true, interval: 4000 });
+    });
 
-    // Partners / Clients infinite scroll (duplicate content for seamless loop)
+    // Infinite scroll for partners/clients
     ['.partners-carousel', '.clients-carousel'].forEach(sel => {
         const el = document.querySelector(sel);
-        if (el) el.innerHTML += el.innerHTML; // duplicate for loop
+        if (el && el.children.length > 0) {
+            el.innerHTML += el.innerHTML; // Duplicate for seamless loop
+        }
     });
 });
 
 /* --------------------------------------------------------------
-   5. PRODUCT SEARCH (static fallback)
+   5. PRODUCT SEARCH – Static fallback with debouncing
    -------------------------------------------------------------- */
-const products = [
-    // ← paste your full product array here (or load via API)
-];
+const products = [];
 
+let searchTimeout;
 function searchProduct() {
-    const input = (document.getElementById('searchInput')?.value ?? '').toLowerCase().trim();
-    const container = document.getElementById('productResults');
-    if (!container) return;
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        const input = (document.getElementById('searchInput')?.value ?? '').toLowerCase().trim();
+        const container = document.getElementById('productResults');
+        if (!container) return;
 
-    container.innerHTML = '';
+        container.innerHTML = '';
 
-    if (!input) {
-        container.innerHTML = '<p>Type a product name to search.</p>';
-        return;
-    }
+        if (!input) {
+            container.innerHTML = '<p class="text-muted">Type a product name to search.</p>';
+            return;
+        }
 
-    const matches = products.filter(p => p.name.toLowerCase().includes(input));
+        const matches = products.filter(p => 
+            p.name?.toLowerCase().includes(input) || 
+            p.class?.toLowerCase().includes(input)
+        );
 
-    if (matches.length) {
-        matches.forEach(p => {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.innerHTML = `
-                <img src="${p.image}" alt="${p.name}" loading="lazy">
-                <h3>${p.name}</h3>
-                <p>${p.class || ''}</p>
-            `;
-            container.appendChild(card);
-        });
-    } else {
-        container.innerHTML = '<p>No product found.</p>';
-    }
+        if (matches.length) {
+            matches.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${p.image || 'placeholder.jpg'}" alt="${p.name}" loading="lazy" onerror="this.src='placeholder.jpg'">
+                    <h3>${p.name}</h3>
+                    <p>${p.class || ''}</p>
+                `;
+                container.appendChild(card);
+            });
+        } else {
+            container.innerHTML = '<p class="text-muted">No product found.</p>';
+        }
+    }, 300); // Debounce
 }
 
-/* Bind search on Enter or button click */
+/* Bind search */
 document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById('searchInput');
     const btn = document.querySelector('.search-box button');
-    if (input) input.addEventListener('keypress', e => e.key === 'Enter' && searchProduct());
+
+    if (input) {
+        input.addEventListener('input', searchProduct);
+        input.addEventListener('keypress', e => e.key === 'Enter' && searchProduct());
+    }
     if (btn) btn.addEventListener('click', searchProduct);
 });
 
 /* --------------------------------------------------------------
-   6. PUBLIC API DEMO (discover routes, fill placeholders)
+   6. PUBLIC API DEMO – Safer & more resilient
    -------------------------------------------------------------- */
 (async function setupPublicAPIExamples() {
-    // Global promise for other pages that need the product list
     if (!window.publicProductsReady) {
         window.publicProductsReady = new Promise(res => { window.__resolvePublicProducts = res; });
     }
 
-    const apiBaseMeta = document.querySelector('meta[name="public-api-base"]');
-    const apiBase = apiBaseMeta ? apiBaseMeta.content.replace(/\/+$/, '') : 'http://localhost:5000';
+    const apiBase = (document.querySelector('meta[name="public-api-base"]')?.content || 'http://localhost:5000').replace(/\/+$/, '');
 
-    /** Helper – fetch via server proxy (injects tenant/key) */
     async function proxyFetch(path, opts = {}) {
         const url = '/proxy' + (path.startsWith('/') ? path : '/' + path);
         const headers = { ...opts.headers, Accept: 'application/json' };
 
-        // Tenant / public key injection (server-side fallback still works)
-        const tenant = document.querySelector('meta[name="public-tenant"]')?.content;
-        const pubKey = document.querySelector('meta[name="public-api-key"]')?.content;
-        if (tenant) headers['X-Tenant'] = tenant;
-        if (pubKey) headers['X-API-Key'] = pubKey;
-
-        return fetch(url, { ...opts, headers, credentials: 'same-origin' });
+    const tenant = document.querySelector('meta[name="public-tenant"]')?.content;
+    const pubKey = document.querySelector('meta[name="public-api-key"]')?.content;
+    if (tenant) headers['X-Tenant'] = tenant;
+    if (pubKey) headers['X-API-Key'] = pubKey;        try {
+            return await fetch(url, { ...opts, headers, credentials: 'same-origin' });
+        } catch (err) {
+            console.warn('Fetch failed:', err);
+            return new Response(null, { status: 0 });
+        }
     }
 
-    /** Render API response into the correct placeholder */
     function render(path, data) {
         const map = {
-            '/public/products': () => {
-                const el = document.getElementById('productsList');
-                if (!el || !data?.products) return;
-                el.innerHTML = `<h3>Products</h3><ul>${data.products.map(p => `<li>${p.name} (${p.price ?? ''})</li>`).join('')}</ul>`;
-            },
-            '/public/categories': () => {
-                const el = document.getElementById('categoryList');
-                const cats = Array.isArray(data) ? data : data?.categories || [];
-                if (!el || !cats.length) return;
-                el.innerHTML = `<h3>Product Categories</h3><ul>${cats.map(c => `<li>${c.name}</li>`).join('')}</ul>`;
-            },
-            // product detail (dynamic id)
-            /^\/public\/products\/\d+$/: () => {
-                const el = document.getElementById('productDetail');
-                if (!el || !data?.name) return;
-                el.innerHTML = `<h3>${data.name}</h3><p>${data.description || ''}</p>`;
-            },
-            '/public/prices': () => {
-                const el = document.getElementById('pricesList');
-                if (!el || !Array.isArray(data)) return;
-                el.innerHTML = `<h3>Prices</h3><ul>${data.map(p => `<li>${p.price_type}: ${p.value} ${p.currency}</li>`).join('')}</ul>`;
-            },
-            '/public/price-categories': () => {
-                const el = document.getElementById('priceCategoriesList');
-                if (!el || !Array.isArray(data)) return;
-                el.innerHTML = `<h3>Price Categories</h3><ul>${data.map(c => `<li>${c.name}: Trade ${c.tradePrice}, Retail ${c.retailPrice}</li>`).join('')}</ul>`;
-            },
+            '/public/products': () => renderList('productsList', data?.products, p => `<li>${p.name} (${p.price ?? ''})</li>`),
+            '/public/categories': () => renderList('categoryList', data?.categories || data, c => `<li>${c.name}</li>`),
+            '/public/prices': () => renderList('pricesList', data, p => `<li>${p.price_type}: ${p.value} ${p.currency}</li>`),
+            '/public/price-categories': () => renderList('priceCategoriesList', data, c => `<li>${c.name}: Trade ${c.tradePrice}, Retail ${c.retailPrice}</li>`),
             '/public/images': () => {
                 const el = document.getElementById('imagesList');
-                const imgs = Array.isArray(data) ? data : data?.images || [];
-                if (!el || !imgs.length) return;
-                el.innerHTML = `<h3>Images</h3><ul>${imgs.map(i => `<li>${i.name}: <img src="${i.url}" alt="${i.name}" style="height:40px"></li>`).join('')}</ul>`;
+                const imgs = data?.images || data || [];
+                if (el && imgs.length) {
+                    el.innerHTML = `<h3>Images</h3><ul>${imgs.map(i => `<li>${i.name}: <img src="${i.url}" alt="${i.name}" style="height:40px"></li>`).join('')}</ul>`;
+                }
             },
         };
 
-        for (const [pattern, fn] of Object.entries(map)) {
-            if (typeof pattern === 'string' && pattern === path) { fn(); return; }
-            if (pattern instanceof RegExp && pattern.test(path)) { fn(); return; }
+        function renderList(id, items, formatter) {
+            const el = document.getElementById(id);
+            if (el && Array.isArray(items) && items.length) {
+                el.innerHTML = `<h3>${id.replace('List', '')}</h3><ul>${items.map(formatter).join('')}</ul>`;
+            }
+        }
+
+        if (map[path]) {
+            map[path]();
+        } else if (/^\/public\/products\/\d+$/.test(path)) {
+            const el = document.getElementById('productDetail');
+            if (el && data?.name) el.innerHTML = `<h3>${data.name}</h3><p>${data.description || ''}</p>`;
         }
     }
 
     try {
-        // Load route documentation
         const routesRes = await fetch('/static/data/public_routes.json');
-        if (!routesRes.ok) throw new Error('routes file missing');
-        const { routes = [] } = await routesRes.json();
+        if (!routesRes.ok) throw new Error('Routes file missing');
 
+        const { routes = [] } = await routesRes.json();
         let discoveredProducts = null;
 
-        // 1. Discover real product IDs
+        // Discover products
         const prodRoute = routes.find(r => r.path === '/public/products');
         if (prodRoute) {
             const qs = prodRoute.request?.query ? '?' + new URLSearchParams(prodRoute.request.query) : '';
@@ -252,129 +340,93 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Resolve global promise
         if (window.__resolvePublicProducts) window.__resolvePublicProducts(discoveredProducts);
 
-        // 2. Call every documented route
+        // Call all routes
         for (const r of routes) {
-            // Routes that need a real product id
             if (r.path.includes('<int:product_id>')) {
                 const ids = discoveredProducts?.products?.map(p => p.id).filter(Boolean) ?? [];
                 if (!ids.length) continue;
-
-                const sampleIds = ids.slice(0, 3); // limit to 3 calls
-                for (const id of sampleIds) {
+                for (const id of ids.slice(0, 3)) {
                     const url = r.path.replace(/<int:product_id>/g, id);
                     const qs = r.request?.query ? '?' + new URLSearchParams(r.request.query) : '';
                     const res = await proxyFetch(url + qs);
-                    const data = res.ok ? await res.json().catch(() => null) : null;
-                    render(url, data);
+                    if (res.ok) render(url, await res.json().catch(() => null));
                 }
-                continue;
+            } else {
+                const qs = r.request?.query ? '?' + new URLSearchParams(r.request.query) : '';
+                const res = await proxyFetch(r.path + qs);
+                if (res.ok) render(r.path, await res.json().catch(() => null));
             }
-
-            // Normal route
-            const qs = r.request?.query ? '?' + new URLSearchParams(r.request.query) : '';
-            const res = await proxyFetch(r.path + qs);
-            const data = res.ok ? await res.json().catch(() => null) : null;
-            render(r.path, data);
         }
     } catch (err) {
-        console.warn('API demo failed – using hard-coded fallbacks', err);
+        console.warn('API demo failed, using fallbacks:', err);
 
-document.addEventListener("DOMContentLoaded", setupPublicAPIExamples);
+        const fallback = async (path, qs = '') => {
+            try {
+                const res = await proxyFetch(path + qs);
+                if (res.ok) render(path, await res.json());
+            } catch (_) {}
+        };
 
-function searchProduct() {
-    const input = document.getElementById("searchInput").value.toLowerCase();
-    const resultsContainer = document.getElementById("productResults");
-    resultsContainer.innerHTML = ""; // clear previous results
-
-    // filter matching products
-    const filtered = products.filter(p => p.name.toLowerCase().includes(input));
-
-    if (filtered.length > 0) {
-        filtered.forEach(p => {
-            const card = document.createElement("div");
-            card.className = "product-card";
-            card.innerHTML = `
-        <img src="${p.image}" alt="${p.name}">
-        <h3>${p.name}</h3>
-        <p>${p.class}</p>
-      `;
-            resultsContainer.appendChild(card);
-        });
-    } else {
-        resultsContainer.innerHTML = `<p>No product found</p>`;
+        await Promise.allSettled([
+            fallback('/public/products', '?per_page=5&q=phone'),
+            fallback('/public/categories'),
+            fallback('/public/products/101'),
+            fallback('/public/prices', '?product_id=101'),
+            fallback('/public/price-categories'),
+            fallback('/public/images', '?per_page=10')
+        ]);
     }
-}
+})();
 
-// Carousel rotation
-let currentIndex = 0;
-setInterval(() => {
-    const items = document.querySelectorAll(".carousel-item");
-    if (items.length === 0) return;
-    items[currentIndex].classList.remove("active");
-    currentIndex = (currentIndex + 1) % items.length;
-    items[currentIndex].classList.add("active");
-}, 3000);
 
-// Smooth header scrolled toggle: add/remove `scrolled` class and shrink logo when user scrolls past threshold
-// (function addHeaderScrollListener() {
-//     function install() {
-//         const header = document.querySelector('header');
-//         const logo = header ? header.querySelector('.logo, .site-logo, img') : null;
-//         let lastScrolled = null;
-//         let ticking = false;
-//         const threshold = 50;
+/* --------------------------------------------------------------
+   CORE VALUES – set background images with correct base path
+   -------------------------------------------------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+    const BASE = (document.querySelector('base')?.href ||
+                  document.head.querySelector('meta[name="static-base"]')?.content ||
+                  '/static/images/').replace(/\/+$/, '') + '/';
 
-//         function updateHeader() {
-//             const scrolled = window.scrollY > threshold;
-//             if (scrolled !== lastScrolled) {
-//                 lastScrolled = scrolled;
-//                 if (header) {
-//                     header.classList.toggle('scrolled', scrolled);
-//                 }
-//                 if (logo) {
-//                     logo.style.transition = 'all 0.3s cubic-bezier(.4,0,.2,1)';
-//                     logo.style.height = scrolled ? '24px' : '56px';
-//                     logo.style.maxWidth = scrolled ? '100px' : '200px';
-//                 }
-//             }
-//             ticking = false;
-//         }
+    document.querySelectorAll('.value-item[data-bg]').forEach(el => {
+        const img = el.dataset.bg;
+        const url = `url("${BASE}${img}")`;
+        el.style.backgroundImage = url;
 
-//         function onScroll() {
-//             if (!ticking) {
-//                 window.requestAnimationFrame(updateHeader);
-//                 ticking = true;
-//             }
-//         }
-
-//         // initial state
-//         updateHeader();
-//         window.addEventListener('scroll', onScroll, { passive: true });
-//     }
-
-//     if (document.readyState === 'loading') {
-//         document.addEventListener('DOMContentLoaded', install);
-//     } else {
-//         install();
-//     }
-// })();
-
-const hamburger = document.querySelector('.hamburger');
-const nav = document.getElementById('main-nav');
-
-hamburger.addEventListener('click', () => {
-  const expanded = hamburger.getAttribute('aria-expanded') === 'true';
-  hamburger.setAttribute('aria-expanded', !expanded);
-  nav.classList.toggle('show');
+        // Optional: preload to avoid FOUC
+        new Image().src = `${BASE}${img}`;
+    });
 });
 
-// ✅ Optional: Mobile dropdown tap behavior
-document.querySelectorAll('.dropbtn').forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    btn.classList.toggle('active');
-  });
+/* --------------------------------------------------------------
+   SCROLL TO TOP BUTTON
+   -------------------------------------------------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+
+    if (scrollToTopBtn) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.classList.add('show');
+            } else {
+                scrollToTopBtn.classList.remove('show');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    // WhatsApp button
+    const whatsappBtn = document.getElementById('whatsappBtn');
+    if (whatsappBtn) {
+        whatsappBtn.addEventListener('click', () => {
+            window.open('https://wa.me/254711638779', '_blank');
+        });
+    }
 });
